@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 720" fill="none">
+  <defs>
+    <linearGradient id="a-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E3C670"/><stop offset="1" stop-color="#A67C12"/>
+    </linearGradient>
+    <radialGradient id="a-halo" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#C9A227" stop-opacity=".40"/>
+      <stop offset="1" stop-color="#C9A227" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="310" cy="330" rx="290" ry="300" fill="url(#a-halo)"/>
+
+  <!-- head profile -->
+  <g transform="translate(70 90)">
+    <path d="M300 40c96 0 168 74 168 168 0 54-18 86-18 126 0 26 22 34 22 56 0 18-16 26-34 30l-40 9v57c0 20-16 36-36 36H206c-22 0-40-18-40-40v-60c-60-34-96-96-96-172C70 118 152 40 300 40Z"
+          fill="#0E0D0C" stroke="url(#a-gold)" stroke-width="3"/>
+    <!-- circuit lines -->
+    <g stroke="url(#a-gold)" stroke-width="2" stroke-opacity=".75">
+      <path d="M120 200h70l30-30h60"/>
+      <path d="M120 250h100l26 26h74"/>
+      <path d="M150 320h60l30 30h90"/>
+      <path d="M190 400h80"/>
+    </g>
+    <g fill="#E3C670">
+      <circle cx="280" cy="170" r="6"/><circle cx="320" cy="276" r="6"/>
+      <circle cx="330" cy="350" r="6"/><circle cx="270" cy="400" r="6"/>
+    </g>
+    <!-- eye ring -->
+    <circle cx="352" cy="212" r="44" stroke="url(#a-gold)" stroke-width="5"/>
+    <circle cx="352" cy="212" r="18" fill="url(#a-gold)"/>
+  </g>
+
+  <!-- orbiting cube -->
+  <g transform="translate(150 610) scale(.55)" opacity=".9">
+    <path d="M0-90 78-45 78 45 0 90-78 45-78-45Z" fill="none" stroke="url(#a-gold)" stroke-width="4"/>
+    <path d="M0-90 0 0-78 45M0 0 78-45" stroke="url(#a-gold)" stroke-width="4"/>
+  </g>
+  <g fill="#C9A227" opacity=".6">
+    <circle cx="540" cy="150" r="7"/><circle cx="70" cy="470" r="5"/><circle cx="560" cy="560" r="6"/>
+  </g>
+</svg>

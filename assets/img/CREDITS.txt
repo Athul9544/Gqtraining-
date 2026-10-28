@@ -1,0 +1,19 @@
+Photography used on goldenqube / gqtraining.vercel.app
+Source: Unsplash (https://unsplash.com/license — free for commercial use, no attribution required,
+but crediting the photographer is appreciated).
+
+hero-workspace.jpg supplied by the client (ChatGPT-generated image, converted to JPG)
+owner.jpg          https://unsplash.com/photos/1560250097-0b93528c311a
+professional.jpg   https://unsplash.com/photos/1573496359142-b8d87734a5a2
+student.jpg        https://unsplash.com/photos/1541178735493-479c1a27ed24
+fresher.jpg        https://unsplash.com/photos/1580489944761-15a19d654956
+ai-robot.jpg       https://www.pexels.com/photo/8294606/  (Pexels licence)
+cta-team.jpg       https://unsplash.com/photos/1521737604893-d14cc237f11d
+rev-1.jpg          https://unsplash.com/photos/1494790108377-be9c29b29330
+rev-2.jpg          https://unsplash.com/photos/1507003211169-0a1dd7228f2d
+rev-3.jpg          https://unsplash.com/photos/1568602471122-7832951cc4c5
+
+Note: these are stock photographs of people who are not connected to Golden Qube.
+They are fine as general category imagery (e.g. "Students", "Professionals"). Do NOT reuse
+them as photos of named learners or testimonial authors — replace those with real client
+photos you have permission to publish.

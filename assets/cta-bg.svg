@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 560" preserveAspectRatio="xMidYMid slice" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#0A0A0A"/>
+      <stop offset=".45" stop-color="#13100B"/>
+      <stop offset="1" stop-color="#241B0C"/>
+    </linearGradient>
+    <radialGradient id="sun" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#E3C670" stop-opacity=".95"/>
+      <stop offset=".45" stop-color="#C9A227" stop-opacity=".40"/>
+      <stop offset="1" stop-color="#C9A227" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1C1710"/><stop offset="1" stop-color="#0A0A0A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="560" fill="url(#sky)"/>
+  <circle cx="1120" cy="300" r="300" fill="url(#sun)"/>
+
+  <!-- stars -->
+  <g fill="#E3C670" opacity=".55">
+    <circle cx="180" cy="80" r="2"/><circle cx="420" cy="140" r="1.6"/><circle cx="700" cy="60" r="2.2"/>
+    <circle cx="960" cy="120" r="1.6"/><circle cx="1320" cy="70" r="2"/><circle cx="1500" cy="180" r="1.8"/>
+    <circle cx="280" cy="220" r="1.4"/><circle cx="620" cy="200" r="1.4"/>
+  </g>
+
+  <!-- far ridge -->
+  <path d="M0 400 220 300 400 372 620 268 820 366 1020 286 1240 380 1420 310 1600 392V560H0Z"
+        fill="url(#ridge)" opacity=".85"/>
+  <!-- near ridge -->
+  <path d="M0 470 260 392 470 452 700 366 900 452 1140 388 1360 462 1600 404V560H0Z" fill="#0A0A0A"/>
+  <g stroke="#C9A227" stroke-opacity=".35" stroke-width="2">
+    <path d="M0 470 260 392 470 452 700 366 900 452 1140 388 1360 462 1600 404"/>
+  </g>
+
+  <!-- figure -->
+  <g transform="translate(1090 392)" fill="#0A0A0A" stroke="#C9A227" stroke-opacity=".5" stroke-width="1.5">
+    <circle cx="0" cy="-58" r="12"/>
+    <path d="M-14-40h28l8 44h-12l-4 54h-8l-6-42-6 42h-8l-4-54h-12Z"/>
+  </g>
+</svg>

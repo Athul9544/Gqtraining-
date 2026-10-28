@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="l-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F0D98C"/><stop offset="1" stop-color="#B8901F"/>
+    </linearGradient>
+    <linearGradient id="l-deep" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E3C670"/><stop offset="1" stop-color="#A67C12"/>
+    </linearGradient>
+  </defs>
+
+  <!-- incoming audience -->
+  <g fill="url(#l-gold)">
+    <circle cx="16" cy="9" r="4"/>
+    <circle cx="32" cy="7" r="4.5"/>
+    <circle cx="48" cy="9" r="4"/>
+  </g>
+  <g fill="url(#l-gold)" opacity=".55">
+    <path d="M10 20a6 6 0 0 1 12 0Z"/>
+    <path d="M25 19a7 7 0 0 1 14 0Z"/>
+    <path d="M42 20a6 6 0 0 1 12 0Z"/>
+  </g>
+
+  <!-- funnel -->
+  <path d="M7 26h50L38 46v13l-12 5V46Z" fill="url(#l-deep)"/>
+  <path d="M7 26h50l-5 5H12Z" fill="#F0D98C" opacity=".65"/>
+
+  <!-- converted lead -->
+  <circle cx="32" cy="58" r="4.5" fill="#F7F3E8"/>
+</svg>

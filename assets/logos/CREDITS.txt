@@ -1,0 +1,34 @@
+Brand logos used on the Training page (training.html)
+
+26 of the 27 tools show their real brand mark. Sources:
+
+1. Simple Icons (https://simpleicons.org), CC0 1.0 / public domain — SVG:
+   googleanalytics, googlesearchconsole, googletagmanager, pagespeedinsights,
+   looker, mailchimp, brevo, youtubestudio
+
+2. Already in the project — SVG:
+   google, google-ads, hubspot, semrush, meta-mark, linkedin,
+   microsoft, facebook, instagram, tiktok
+
+3. Each brand's own site icon, fetched at 128px (180px for SEOquake) — PNG:
+   ahrefs, moz, ubersuggest, seoquake, screamingfrog,
+   vidiq, tubebuddy, answerthepublic, keywordseverywhere
+
+Shared marks, because these products have no logo of their own:
+   Google Keyword Planner + Google Ads Transparency Center -> google-ads.svg
+   Google Trends                                           -> google.svg
+   Meta Ads Manager / Ads Library / Creative Hub           -> meta-mark.svg
+
+STILL A PLACEHOLDER (1):
+   SEO Optimizer — seoptimer.com publishes only a 16px icon and blocks
+   automated requests, so it keeps the green "SO" tile. To finish it, save a
+   logo as assets/logos/seoptimer.png (or .svg) and replace this in
+   training.html:
+       <i class="mono" style="--c:#2E7D32">SO</i>SEO Optimizer
+   with:
+       <i class="tp-logo"><img src="assets/logos/seoptimer.png" alt="" loading="lazy"></i>SEO Optimizer
+
+Note on trademarks: these files are logos owned by their respective companies.
+Showing a product's logo to identify a tool taught on a course is normal
+nominative use, but each brand has its own guidelines on spacing, colour and
+minimum size. Check those before using the marks in print or paid advertising.
