@@ -441,48 +441,6 @@ if (form) {
   if (name) setTimeout(() => name.focus({ preventScroll: true }), 200);
 })();
 
-/* Why Choose: the section pins and each slide is uncovered by a circle
-   growing out of its bottom-right corner over the one beneath, the way the
-   dark panel sweeps in from that corner in the reference clip. The slides
-   are stacked rather than travelling sideways — moving them would carry
-   that corner off the screen and the curve would never be seen. */
-(() => {
-  const section = document.querySelector('[data-stack]');
-  if (!section) return;
-
-  const outer = section.querySelector('[data-hs-outer]');
-  const cards = Array.from(section.querySelectorAll('.tp-why-card'));
-  if (!outer || cards.length < 2) return;
-
-  const narrow = window.matchMedia('(max-width: 1080px)');
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
-
-  const measure = () => {
-    if (narrow.matches || still.matches) {
-      section.classList.remove('hs-on');
-      outer.style.height = '';
-      return;
-    }
-    section.classList.add('hs-on');
-    // one screen of scrolling to bring in each slide after the first
-    outer.style.height = (window.innerHeight * cards.length) + 'px';
-  };
-
-  // exposed so the shared paint routine can reuse the same progress
-  section._stackProgress = () => {
-    const span = outer.offsetHeight - window.innerHeight;
-    if (span <= 0) return 0;
-    return clamp(-outer.getBoundingClientRect().top / span) * (cards.length - 1);
-  };
-
-  window.addEventListener('resize', measure);
-  narrow.addEventListener('change', measure);
-  still.addEventListener('change', measure);
-  window.addEventListener('load', measure);
-  measure();
-})();
-
 /* Why Choose slides: a scroll-driven entrance for the five points.
    The first arrives diagonally from the bottom-right as the section comes up
    the screen; the rest follow one at a time as you scroll through them.
@@ -491,7 +449,7 @@ if (form) {
    smoothly when you scroll up. Works in both layouts: pinned and horizontal
    on desktop, stacked on narrow screens. */
 (() => {
-  const section = document.querySelector('[data-stack]');
+  const section = document.querySelector('.tp-hs[data-hscroll]');
   if (!section) return;
 
   const outer = section.querySelector('[data-hs-outer]');
@@ -507,38 +465,23 @@ if (form) {
      slides travel on in each layout. */
   const paint = () => {
     if (still.matches) {
-      cards.forEach(c => {
-        c.style.setProperty('--d', '0');
-        c.style.setProperty('--ad', '0');
-        c.style.setProperty('--in', '1');
-      });
+      cards.forEach(c => c.style.setProperty('--in', '1'));
       return;
     }
 
-    const pinned = section.classList.contains('hs-on');
     const vh = window.innerHeight;
+    const first = cards[0];
 
-    if (pinned) {
-      // stacked: scroll position decides how far each slide's circle has opened
-      const pos = section._stackProgress ? section._stackProgress() : 0;
-      cards.forEach((card, i) => {
-        // the first slide is the base layer and is always fully shown
-        const open = i === 0 ? 1 : Math.max(0, Math.min(1, pos - (i - 1)));
-        card.style.setProperty('--in', ease(open).toFixed(4));
-        card.style.setProperty('--d', '0');
-        card.style.setProperty('--ad', '0');
-      });
-      return;
-    }
+    /* Only the first slide carries the corner wipe. It is driven by the
+       section's approach, while that slide sits still and fills the screen,
+       which is the one moment the curve is actually visible. The rest just
+       travel in from the left, so they stay fully uncovered. */
+    const lead = section.classList.contains('hs-on')
+      ? 1 - outer.getBoundingClientRect().top / (vh * 0.7)
+      : 1 - (first.getBoundingClientRect().top - vh * 0.15) / (vh * 0.6);
 
-    // flowing normally: each slide opens on its own way up the viewport
-    cards.forEach(card => {
-      const r = card.getBoundingClientRect();
-      const d = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / vh));
-      card.style.setProperty('--d', d.toFixed(4));
-      card.style.setProperty('--ad', ease(Math.abs(d)).toFixed(4));
-      card.style.setProperty('--in', ease(d > 0 ? 1 - d : 1).toFixed(4));
-    });
+    first.style.setProperty('--in', ease(Math.max(0, Math.min(1, lead))).toFixed(4));
+    cards.slice(1).forEach(c => c.style.setProperty('--in', '1'));
   };
 
   let ticking = false;
