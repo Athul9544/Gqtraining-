@@ -525,28 +525,57 @@ if (form) {
   io.observe(wrap);
 })();
 
-/* Journey modules: once the grid reaches the viewport the cards arrive one
-   after another, so the section reads as a sequence rather than a block.
-   The hiding class is added from here, so with JS off nothing disappears. */
+/* Journey modules: the tiles rise in as they reach the viewport, cascading
+   across each row, and a rail under the heading fills to show how far
+   through the twelve you have scrolled. Both are read off the scroll
+   position each frame, so they run backwards on the way up rather than
+   firing once and staying put. */
 document.querySelectorAll('[data-stagger]').forEach(grid => {
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (still.matches) return;                  // no entrance for anyone who opted out
-
   const items = Array.from(grid.children);
-  grid.classList.add('stagger-ready');
+  if (!items.length) return;
 
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      items.forEach((el, i) => {
-        el.style.transitionDelay = (i * 85) + 'ms';
-        el.classList.add('in');
-      });
-      io.disconnect();                        // a one-off entrance, not a loop
+  const section = grid.closest('section');
+  const rail = section && section.querySelector('.tp-journey-rail');
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const ease = t => 1 - Math.pow(1 - t, 3);
+
+  const paint = () => {
+    const vh = window.innerHeight;
+
+    if (still.matches) {
+      items.forEach(el => el.style.setProperty('--r', '1'));
+      if (rail) rail.style.setProperty('--p', '1');
+      return;
+    }
+
+    items.forEach((el, i) => {
+      const r = el.getBoundingClientRect();
+      /* a small offset per tile makes a row arrive left to right instead of
+         all at once, without needing a timed delay */
+      const stagger = (i % 7) * 0.04;
+      const raw = 1 - (r.top - vh * 0.18) / (vh * 0.52) - stagger;
+      el.style.setProperty('--r', ease(clamp(raw)).toFixed(3));
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -50px' });
 
-  io.observe(grid);
+    if (rail) {
+      const g = grid.getBoundingClientRect();
+      // 0 as the grid reaches the bottom of the screen, 1 once it has passed
+      const span = g.height + vh * 0.5;
+      rail.style.setProperty('--p', clamp((vh - g.top - vh * 0.25) / span).toFixed(3));
+    }
+  };
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { paint(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', paint);
+  window.addEventListener('load', paint);
+  still.addEventListener('change', paint);
+  paint();
 });
 
 /* Tools marquee (training page): duplicate each row's chips so the CSS can

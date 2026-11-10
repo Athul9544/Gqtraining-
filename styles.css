@@ -1570,6 +1570,21 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 
 /* ---------- journey / modules ---------- */
 .tp-journey h2,.tp-tools h2,.tp-jobs h2{font-size:clamp(1.6rem,3.2vw,2.3rem);margin-bottom:26px}
+.tp-journey h2{margin-bottom:10px}
+.tp-journey-sub{color:var(--muted);font-size:.98rem;margin-bottom:20px}
+
+/* A rail that fills as you scroll the modules — the section is a journey,
+   so it reads as progress through it. script.js writes --p (0 to 1); at 0
+   the fill is simply empty, so nothing looks wrong without the script. */
+.tp-journey-rail{
+  position:relative;height:3px;border-radius:3px;
+  background:rgba(201,162,39,.16);margin-bottom:32px;overflow:hidden;
+}
+.tp-journey-rail>span{
+  position:absolute;inset:0 auto 0 0;
+  width:calc(var(--p,0) * 100%);
+  background:var(--gold-grad);border-radius:inherit;
+}
 /* start-aligned: the tall AI card must not stretch its neighbours.
    The counter numbers the modules so the grid reads as a sequence. */
 .tp-mod-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:14px;align-items:start;counter-reset:tp-mod}
@@ -1582,13 +1597,16 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   box-shadow:0 2px 10px rgba(20,19,18,.04);
   transition:transform .35s,border-color .35s,box-shadow .35s;
 }
-/* the one-by-one entrance; .stagger-ready is set by script.js, so the cards
-   are only ever hidden when there is JS running to bring them back */
-.tp-mod-grid.stagger-ready .tp-mod{
-  opacity:0;transform:translateY(26px) scale(.96);
-  transition:opacity .6s cubic-bezier(.2,.7,.3,1),transform .6s cubic-bezier(.2,.7,.3,1);
+/* The tiles rise in as they reach the viewport, cascading across each row.
+   script.js writes --r (0 to 1) per tile from the scroll position, so it
+   runs backwards on the way up. It defaults to 1 — fully arrived — so the
+   grid is never left blank if the script does not run. */
+.tp-mod{
+  opacity:calc(.25 + var(--r,1) * .75);
+  transform:translateY(calc((1 - var(--r,1)) * 30px)) scale(calc(.955 + var(--r,1) * .045));
 }
-.tp-mod-grid.stagger-ready .tp-mod.in{opacity:1;transform:none}
+/* hover still wins, since it comes later and is the deliberate state */
+.tp-mod:hover{transform:translateY(-6px) scale(1);opacity:1}
 .tp-mod .tp-ico{width:52px;height:52px;flex:0 0 52px}
 .tp-mod .tp-ico svg{width:24px;height:24px}
 .tp-mod .tp-logo{width:52px;height:52px;flex:0 0 52px}
