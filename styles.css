@@ -1448,18 +1448,18 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-hs.hs-on .tp-hs-track>.tp-why-card:hover{transform:none;box-shadow:none}
 
 /* a different ground for each point, alternating light and dark */
-.tp-hs.hs-on .tp-why-card:nth-child(1){background:#FBF6E9}
-.tp-hs.hs-on .tp-why-card:nth-child(2){background:#141312}
+.tp-hs.hs-on .tp-why-card:nth-child(1){background:#141312}
+.tp-hs.hs-on .tp-why-card:nth-child(2){background:#FBF6E9}
 .tp-hs.hs-on .tp-why-card:nth-child(3){background:linear-gradient(145deg,#EBD596,#C9A227)}
 .tp-hs.hs-on .tp-why-card:nth-child(4){background:#1C1814}
 .tp-hs.hs-on .tp-why-card:nth-child(5){background:#F2E4C2}
 
 /* the two dark panels flip their type and icon to stay readable */
-.tp-hs.hs-on .tp-why-card:nth-child(2) h3,
+.tp-hs.hs-on .tp-why-card:nth-child(1) h3,
 .tp-hs.hs-on .tp-why-card:nth-child(4) h3{color:#fff}
-.tp-hs.hs-on .tp-why-card:nth-child(2) p,
+.tp-hs.hs-on .tp-why-card:nth-child(1) p,
 .tp-hs.hs-on .tp-why-card:nth-child(4) p{color:rgba(255,255,255,.74)}
-.tp-hs.hs-on .tp-why-card:nth-child(2) .tp-ico,
+.tp-hs.hs-on .tp-why-card:nth-child(1) .tp-ico,
 .tp-hs.hs-on .tp-why-card:nth-child(4) .tp-ico{
   border-color:var(--line-gold);background:rgba(201,162,39,.16);color:var(--gold-light);
 }
