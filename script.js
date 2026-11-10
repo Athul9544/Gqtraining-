@@ -563,12 +563,49 @@ document.querySelectorAll('[data-stagger]').forEach(grid => {
     });
   };
 
+  /* The section pins while the tiles arrive, so the page cannot move on
+     until every one has landed. Only on screens wide enough to hold the
+     whole grid at once — stacked two-wide on a phone it is far too tall to
+     pin, so there the tiles just arrive as they scroll past. */
+  const narrow = window.matchMedia('(max-width: 1080px)');
+  const section2 = document.querySelector('[data-journey]');
+  const outer = section2 && section2.querySelector('[data-journey-outer]');
+
+  const measure = () => {
+    if (!outer) return;
+    if (narrow.matches || still.matches) {
+      section2.classList.remove('pin-on');
+      outer.style.height = '';
+      return;
+    }
+    section2.classList.add('pin-on');
+    // one screen held, plus a bit over another to bring them all in
+    outer.style.height = Math.round(window.innerHeight * 2.15) + 'px';
+  };
+
   const paint = () => {
     const vh = window.innerHeight;
+    const n = items.length;
 
     if (still.matches) {
       items.forEach(el => el.style.setProperty('--r', '1'));
       if (rail) rail.style.setProperty('--p', '1');
+      return;
+    }
+
+    const pinned = section2 && section2.classList.contains('pin-on');
+
+    if (pinned) {
+      const span = outer.offsetHeight - vh;
+      const p = span > 0 ? clamp(-outer.getBoundingClientRect().top / span) : 0;
+      /* overlapping windows: each tile has its own slot in the scroll, but
+         the slots run three wide so one starts before the last has finished
+         and the arrivals flow rather than march */
+      const step = 1 / (n + 2);
+      items.forEach((el, i) => {
+        el.style.setProperty('--r', ease(clamp((p - i * step) / (step * 3))).toFixed(3));
+      });
+      if (rail) rail.style.setProperty('--p', p.toFixed(3));
       return;
     }
 
@@ -589,7 +626,8 @@ document.querySelectorAll('[data-stagger]').forEach(grid => {
     }
   };
 
-  const relayout = () => { place(); paint(); };
+  const relayout = () => { measure(); place(); paint(); };
+  narrow.addEventListener('change', relayout);
 
   let ticking = false;
   window.addEventListener('scroll', () => {

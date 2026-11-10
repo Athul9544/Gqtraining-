@@ -1614,6 +1614,18 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 /* the tiles start off screen, so the page must not grow sideways to fit
    them. clip rather than hidden, so it cannot create a scroll container. */
 .tp-journey{overflow-x:clip}
+
+/* Pinned: the section holds still while every tile flies in, and the page
+   only carries on once they have all landed. script.js adds .pin-on and
+   sets the height, so without it this is an ordinary block and the tiles
+   simply arrive as they scroll past. */
+.tp-journey-outer{position:relative}
+.tp-journey.pin-on .tp-journey-sticky{
+  position:sticky;top:0;
+  height:100vh;height:100svh;
+  display:flex;align-items:center;
+}
+.tp-journey.pin-on .tp-journey-sticky>.shell{width:100%}
 .tp-mod .tp-ico{width:52px;height:52px;flex:0 0 52px}
 .tp-mod .tp-ico svg{width:24px;height:24px}
 .tp-mod .tp-logo{width:52px;height:52px;flex:0 0 52px}
