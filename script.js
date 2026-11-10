@@ -525,11 +525,10 @@ if (form) {
   io.observe(wrap);
 })();
 
-/* Journey modules: the tiles rise in as they reach the viewport, cascading
-   across each row, and a rail under the heading fills to show how far
-   through the twelve you have scrolled. Both are read off the scroll
-   position each frame, so they run backwards on the way up rather than
-   firing once and staying put. */
+/* Journey modules: each tile flies in from beyond the nearest screen edge as
+   it reaches the viewport, and a rail under the heading fills to show how
+   far through the twelve you have scrolled. Both read the scroll position
+   each frame, so they run backwards on the way up rather than firing once. */
 document.querySelectorAll('[data-stagger]').forEach(grid => {
   const items = Array.from(grid.children);
   if (!items.length) return;
@@ -539,6 +538,30 @@ document.querySelectorAll('[data-stagger]').forEach(grid => {
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
   const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
   const ease = t => 1 - Math.pow(1 - t, 3);
+
+  /* How far each tile must travel to sit just outside the screen: one on the
+     left half goes far enough left to clear that edge, one on the right far
+     enough right.
+
+     offsetLeft and offsetWidth are used rather than getBoundingClientRect
+     because they report the laid-out position and ignore transforms. A rect
+     reads where the tile has already been pushed to, so each call would
+     measure a shorter distance than the last and the travel would collapse
+     toward nothing. */
+  const place = () => {
+    const vw = window.innerWidth;
+    const host = items[0].offsetParent || document.body;
+    const hostLeft = host.getBoundingClientRect().left;
+
+    items.forEach(el => {
+      const left = hostLeft + el.offsetLeft;
+      const w = el.offsetWidth;
+      const from = (left + w / 2) < vw / 2
+        ? -(left + w + 60)           // off the left edge
+        : (vw - left + 60);          // off the right edge
+      el.style.setProperty('--from', Math.round(from) + 'px');
+    });
+  };
 
   const paint = () => {
     const vh = window.innerHeight;
@@ -551,9 +574,9 @@ document.querySelectorAll('[data-stagger]').forEach(grid => {
 
     items.forEach((el, i) => {
       const r = el.getBoundingClientRect();
-      /* a small offset per tile makes a row arrive left to right instead of
+      /* a small offset per column makes a row arrive in sequence rather than
          all at once, without needing a timed delay */
-      const stagger = (i % 7) * 0.04;
+      const stagger = (i % 7) * 0.05;
       const raw = 1 - (r.top - vh * 0.18) / (vh * 0.52) - stagger;
       el.style.setProperty('--r', ease(clamp(raw)).toFixed(3));
     });
@@ -566,16 +589,18 @@ document.querySelectorAll('[data-stagger]').forEach(grid => {
     }
   };
 
+  const relayout = () => { place(); paint(); };
+
   let ticking = false;
   window.addEventListener('scroll', () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(() => { paint(); ticking = false; });
   }, { passive: true });
-  window.addEventListener('resize', paint);
-  window.addEventListener('load', paint);
-  still.addEventListener('change', paint);
-  paint();
+  window.addEventListener('resize', relayout);
+  window.addEventListener('load', relayout);
+  still.addEventListener('change', relayout);
+  relayout();
 });
 
 /* Tools marquee (training page): duplicate each row's chips so the CSS can

@@ -1597,16 +1597,23 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   box-shadow:0 2px 10px rgba(20,19,18,.04);
   transition:transform .35s,border-color .35s,box-shadow .35s;
 }
-/* The tiles rise in as they reach the viewport, cascading across each row.
-   script.js writes --r (0 to 1) per tile from the scroll position, so it
-   runs backwards on the way up. It defaults to 1 — fully arrived — so the
-   grid is never left blank if the script does not run. */
+/* Each tile flies in from beyond the nearest screen edge — those on the left
+   half from the left, those on the right from the right. script.js measures
+   the exact distance each one needs to clear the edge and writes it as
+   --from, then --r (0 to 1) drives it home from the scroll position, so it
+   runs backwards on the way up. Both default to arrived, so the grid is
+   never left blank if the script does not run. */
 .tp-mod{
-  opacity:calc(.25 + var(--r,1) * .75);
-  transform:translateY(calc((1 - var(--r,1)) * 30px)) scale(calc(.955 + var(--r,1) * .045));
+  opacity:calc(.2 + var(--r,1) * .8);
+  transform:translateX(calc((1 - var(--r,1)) * var(--from,0px)));
 }
 /* hover still wins, since it comes later and is the deliberate state */
-.tp-mod:hover{transform:translateY(-6px) scale(1);opacity:1}
+.tp-mod:hover{transform:translateY(-6px);opacity:1}
+/* set for a moment while script.js measures where each tile actually sits */
+.tp-mod-grid.is-measuring .tp-mod{transform:none}
+/* the tiles start off screen, so the page must not grow sideways to fit
+   them. clip rather than hidden, so it cannot create a scroll container. */
+.tp-journey{overflow-x:clip}
 .tp-mod .tp-ico{width:52px;height:52px;flex:0 0 52px}
 .tp-mod .tp-ico svg{width:24px;height:24px}
 .tp-mod .tp-logo{width:52px;height:52px;flex:0 0 52px}
