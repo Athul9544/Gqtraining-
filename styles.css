@@ -1387,30 +1387,24 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    nothing can get stuck invisible if the script never runs.
    Only the contents move — the panel itself stays exactly where the layout
    puts it, so no gap ever opens between the coloured backgrounds. */
-.tp-why-card{--in:1;--dx:0px;--dy:34px;--rx:0deg;--sc:0;overflow:hidden}
-/* The first slide follows the reference clip: it starts tipped back in 3D and
-   a little smaller, then stands upright and grows as it settles. */
-.tp-why-card:first-child{--dx:54px;--dy:96px;--rx:24deg;--sc:.18}
-/* overflow:hidden above is load-bearing: without it the first card's
-   rightward offset extends the page's scrollable width and a narrow screen
-   gains a horizontal scrollbar. */
-
-/* One wrapper carries the whole group, so icon, heading and text tip up
-   together as a single plane. Rotating each of them separately would spin
-   them about their own centres and come apart. */
-.tp-why-inner{
+/* Each slide grows diagonally out of the bottom-right corner — the spot the
+   WhatsApp shortcut sits in — until it fills the screen. The whole panel
+   scales, so its contents come up with it. */
+.tp-why-card{
+  --in:1;
+  overflow:hidden;
   opacity:var(--in);
-  transform-origin:50% 100%;      /* hinges at the foot, so it stands up */
-  transform:
-    perspective(1400px)
-    translate3d(
-      calc(var(--dx) * (1 - var(--in))),
-      calc(var(--dy) * (1 - var(--in))),0)
-    rotateX(calc(var(--rx) * (1 - var(--in))))
-    scale(calc(1 - (1 - var(--in)) * var(--sc)));
+  transform-origin:100% 100%;     /* the corner it grows out of */
+  transform:scale(calc(.34 + .66 * var(--in)));
   /* driven per frame, so a transition here would only lag behind */
   transition:none;
 }
+/* the hover lift would fight the scroll-driven scale, so only the surface
+   responds to hover now */
+.tp-why-card:hover{transform:scale(calc(.34 + .66 * var(--in)))}
+
+/* the wrapper is now purely for layout — it holds the stack together */
+.tp-why-inner{transition:none}
 /* the pinned panels centre their contents, which now live in the wrapper */
 .tp-hs.hs-on .tp-hs-track>.tp-why-card>.tp-why-inner{
   display:flex;flex-direction:column;align-items:center;gap:26px;width:100%;
@@ -1798,8 +1792,9 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   .tp-chips{gap:14px 18px}
   .tp-chips li{flex:0 0 calc(50% - 9px)}
   .tp-hs-track{grid-template-columns:1fr}
-  /* a shorter run suits the smaller cards */
-  .tp-why-card:first-child{--dx:44px;--dy:40px}
+  /* a gentler grow suits the smaller stacked cards */
+  .tp-why-card{transform:scale(calc(.62 + .38 * var(--in)))}
+  .tp-why-card:hover{transform:scale(calc(.62 + .38 * var(--in)))}
   .tp-mod-grid,.tp-job-grid{grid-template-columns:repeat(2,1fr)}
   .tp-aification{grid-column:span 2}
   /* stacked, so the horizontal rail no longer lines anything up */
