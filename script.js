@@ -457,34 +457,34 @@ if (form) {
   if (!outer || !cards.length) return;
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
   const ease = t => 1 - Math.pow(1 - t, 3);   // settles rather than stops dead
 
+  /* Each slide's offset from the middle of the screen, as a fraction of a
+     screen: 0 when centred, ±1 one screen away. Pinned, that is measured
+     across; stacked, it is measured up and down, since that is the axis the
+     slides travel on in each layout. */
   const paint = () => {
     if (still.matches) {
-      cards.forEach(c => c.style.setProperty('--in', '1'));
+      cards.forEach(c => {
+        c.style.setProperty('--d', '0');
+        c.style.setProperty('--ad', '0');
+      });
       return;
     }
+
+    const across = section.classList.contains('hs-on');
+    const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    if (section.classList.contains('hs-on')) {
-      // pinned: how far the track has travelled decides which slide is due
-      const top = outer.getBoundingClientRect().top;
-      const span = outer.offsetHeight - vh;
-      const pos = (span > 0 ? clamp(-top / span) : 0) * (cards.length - 1);
-      // the first one rides the section's approach, before the pin engages
-      const lead = clamp(1 - top / (vh * 0.7));
-      cards.forEach((card, i) => {
-        const e = i === 0 ? lead : clamp(pos - (i - 1));
-        card.style.setProperty('--in', ease(e).toFixed(3));
-      });
-    } else {
-      // stacked: each card animates on its own way up the viewport
-      cards.forEach(card => {
-        const r = card.getBoundingClientRect();
-        card.style.setProperty('--in', ease(clamp(1 - (r.top - vh * 0.2) / (vh * 0.55))).toFixed(3));
-      });
-    }
+    cards.forEach(card => {
+      const r = card.getBoundingClientRect();
+      const d = across
+        ? (r.left + r.width / 2 - vw / 2) / vw
+        : (r.top + r.height / 2 - vh / 2) / vh;
+      const capped = Math.max(-1, Math.min(1, d));
+      card.style.setProperty('--d', capped.toFixed(4));
+      card.style.setProperty('--ad', ease(Math.abs(capped)).toFixed(4));
+    });
   };
 
   let ticking = false;

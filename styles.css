@@ -1387,24 +1387,24 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    nothing can get stuck invisible if the script never runs.
    Only the contents move — the panel itself stays exactly where the layout
    puts it, so no gap ever opens between the coloured backgrounds. */
-/* Each slide grows diagonally out of the bottom-right corner — the spot the
-   WhatsApp shortcut sits in — until it fills the screen. The whole panel
-   scales, so its contents come up with it. */
-.tp-why-card{
-  --in:1;
-  overflow:hidden;
-  opacity:var(--in);
-  transform-origin:100% 100%;     /* the corner it grows out of */
-  transform:scale(calc(.34 + .66 * var(--in)));
-  /* driven per frame, so a transition here would only lag behind */
+/* Following the reference clip: a slide stands upright and full size when it
+   is centred, and tilts away and shrinks as it moves off to either side. The
+   motion is continuous and tied to scroll position, not a one-off entrance.
+   script.js writes --d (signed, how far off centre) and --ad (its distance,
+   unsigned) every frame. Both default to 0, meaning centred and upright, so
+   nothing is left skewed if the script never runs. */
+.tp-why-card{--d:0;--ad:0;overflow:hidden;transition:none}
+/* the hover lift would fight the scroll-driven transform */
+.tp-why-card:hover{transform:none}
+
+/* Only the contents tilt. Rotating the panel itself would swing its corners
+   away from the screen edges and show wedges of page behind a full-bleed
+   slide — in the clip the cards are inset, so they can rotate freely. */
+.tp-why-inner{
+  transform:rotate(calc(var(--d) * 7deg)) scale(calc(1 - var(--ad) * .16));
+  opacity:calc(1 - var(--ad) * .4);
   transition:none;
 }
-/* the hover lift would fight the scroll-driven scale, so only the surface
-   responds to hover now */
-.tp-why-card:hover{transform:scale(calc(.34 + .66 * var(--in)))}
-
-/* the wrapper is now purely for layout — it holds the stack together */
-.tp-why-inner{transition:none}
 /* the pinned panels centre their contents, which now live in the wrapper */
 .tp-hs.hs-on .tp-hs-track>.tp-why-card>.tp-why-inner{
   display:flex;flex-direction:column;align-items:center;gap:26px;width:100%;
@@ -1792,9 +1792,8 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   .tp-chips{gap:14px 18px}
   .tp-chips li{flex:0 0 calc(50% - 9px)}
   .tp-hs-track{grid-template-columns:1fr}
-  /* a gentler grow suits the smaller stacked cards */
-  .tp-why-card{transform:scale(calc(.62 + .38 * var(--in)))}
-  .tp-why-card:hover{transform:scale(calc(.62 + .38 * var(--in)))}
+  /* a lighter tilt suits the smaller stacked cards */
+  .tp-why-inner{transform:rotate(calc(var(--d) * 4deg)) scale(calc(1 - var(--ad) * .1))}
   .tp-mod-grid,.tp-job-grid{grid-template-columns:repeat(2,1fr)}
   .tp-aification{grid-column:span 2}
   /* stacked, so the horizontal rail no longer lines anything up */
