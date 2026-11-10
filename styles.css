@@ -1392,25 +1392,36 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-why-intro{position:sticky;top:120px}
 .tp-why-intro h2{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.12}
 
-.tp-why-stack{display:flex;flex-direction:column;gap:22px;padding-bottom:12px}
+.tp-why-stack{display:flex;flex-direction:column;gap:26px;padding-bottom:16px}
 .tp-why-card{
   position:sticky;
-  /* each card parks 16px lower than the one before it */
-  top:calc(120px + (var(--i) - 1) * 16px);
-  min-height:250px;border-radius:22px;padding:34px 34px 30px;
-  display:flex;flex-direction:column;align-items:flex-start;gap:14px;
+  /* each card parks 18px lower than the one before it */
+  top:calc(116px + (var(--i) - 1) * 18px);
+  min-height:330px;border-radius:28px;padding:46px 46px 42px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:18px;
   border:1px solid var(--line);
-  box-shadow:0 -14px 40px rgba(20,19,18,.16);
+  /* layered rather than one flat shadow — reads as depth, not a drop */
+  box-shadow:0 -2px 6px rgba(20,19,18,.05),0 -18px 50px rgba(20,19,18,.17);
+  /* as the next card covers this one it eases back into the stack */
+  transform-origin:50% 0;
+  transform:scale(calc(1 - var(--cov,0) * .055));
   transition:border-color .35s;
 }
+/* and dims a little, so the strip you can still see reads as further away */
+.tp-why-card::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:rgba(14,13,12,calc(var(--cov,0) * .28));
+}
 .tp-why-card:hover{border-color:var(--line-gold)}
+.tp-why-card .tp-ico{width:64px;height:64px;flex:0 0 64px}
+.tp-why-card .tp-ico svg{width:29px;height:29px}
 .tp-why-num{
-  position:absolute;top:26px;right:30px;
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:.82rem;
+  position:absolute;top:32px;right:36px;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;
   letter-spacing:.14em;opacity:.65;
 }
-.tp-why-card h3{font-size:1.5rem;margin:2px 0 0}
-.tp-why-card p{font-size:.97rem;line-height:1.7;max-width:520px}
+.tp-why-card h3{font-size:clamp(1.6rem,2.4vw,2.1rem);margin:4px 0 0;letter-spacing:-.02em}
+.tp-why-card p{font-size:1.06rem;line-height:1.65;max-width:560px}
 
 /* a different ground for each point, alternating light and dark */
 .tp-why-card:nth-child(1){background:#141312}

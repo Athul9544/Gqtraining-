@@ -441,6 +441,49 @@ if (form) {
   if (name) setTimeout(() => name.focus({ preventScroll: true }), 200);
 })();
 
+/* Why Choose: as each card in the stack gets covered by the next, it eases
+   back and dims a little, which is what gives the pile its sense of depth.
+   The stacking itself is plain CSS sticky — this only adds the recede, and
+   writes a single number per card, so if it never runs the cards simply sit
+   flat and nothing is broken. */
+(() => {
+  const stack = document.querySelector('.tp-why-stack');
+  if (!stack) return;
+
+  const cards = Array.from(stack.querySelectorAll('.tp-why-card'));
+  if (cards.length < 2) return;
+
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // ease-in-out, so a card leaves and settles gently rather than linearly
+  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+  const paint = () => {
+    cards.forEach((card, i) => {
+      const next = cards[i + 1];
+      if (!next || still.matches) {
+        card.style.setProperty('--cov', '0');
+        return;
+      }
+      const r = card.getBoundingClientRect();
+      const n = next.getBoundingClientRect();
+      // 0 while the next card is still below, 1 once it sits right on top
+      const covered = r.height > 0 ? (r.bottom - n.top) / r.height : 0;
+      card.style.setProperty('--cov', ease(Math.max(0, Math.min(1, covered))).toFixed(4));
+    });
+  };
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { paint(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', paint);
+  window.addEventListener('load', paint);
+  still.addEventListener('change', paint);
+  paint();
+})();
+
 /* Certificates: each one takes a turn out front, on a loop. The spotlight is
    a class, so all the sizing and easing stays in the stylesheet. */
 (() => {
