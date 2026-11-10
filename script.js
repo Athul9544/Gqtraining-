@@ -58,7 +58,14 @@ document.querySelectorAll('[data-hscroll]').forEach(section => {
     if (!distance) return;
     const rect = outer.getBoundingClientRect();
     const progress = Math.min(Math.max(-rect.top / distance, 0), 1);
-    track.style.transform = 'translate3d(' + -progress * distance + 'px,0,0)';
+    /* Normally the track slides left, so cards arrive from the right edge.
+       Reversed, it starts shifted left and travels back to zero, so the
+       cards arrive from the left edge instead. The CSS flips their running
+       order to match, which keeps the points in sequence either way. */
+    const x = section.hasAttribute('data-hs-reverse')
+      ? -(1 - progress) * distance
+      : -progress * distance;
+    track.style.transform = 'translate3d(' + x + 'px,0,0)';
   };
 
   window.addEventListener('scroll', () => {
@@ -432,6 +439,68 @@ if (form) {
   if (note) note.textContent = 'We have added your e-mail — tell us a little about what you need.';
   const name = document.getElementById('cf-name');
   if (name) setTimeout(() => name.focus({ preventScroll: true }), 200);
+})();
+
+/* Why Choose slides: a scroll-driven entrance for the five points.
+   The first arrives diagonally from the bottom-right as the section comes up
+   the screen; the rest follow one at a time as you scroll through them.
+   Everything is computed from the current scroll position rather than fired
+   by a one-shot trigger, which is what lets it run backwards just as
+   smoothly when you scroll up. Works in both layouts: pinned and horizontal
+   on desktop, stacked on narrow screens. */
+(() => {
+  const section = document.querySelector('.tp-hs[data-hscroll]');
+  if (!section) return;
+
+  const outer = section.querySelector('[data-hs-outer]');
+  const cards = Array.from(section.querySelectorAll('.tp-why-card'));
+  if (!outer || !cards.length) return;
+
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const ease = t => 1 - Math.pow(1 - t, 3);   // settles rather than stops dead
+
+  const paint = () => {
+    if (still.matches) {
+      cards.forEach(c => c.style.setProperty('--in', '1'));
+      return;
+    }
+    const vh = window.innerHeight;
+
+    if (section.classList.contains('hs-on')) {
+      // pinned: how far the track has travelled decides which slide is due
+      const top = outer.getBoundingClientRect().top;
+      const span = outer.offsetHeight - vh;
+      const pos = (span > 0 ? clamp(-top / span) : 0) * (cards.length - 1);
+      // the first one rides the section's approach, before the pin engages
+      const lead = clamp(1 - top / (vh * 0.7));
+      cards.forEach((card, i) => {
+        const e = i === 0 ? lead : clamp(pos - (i - 1));
+        card.style.setProperty('--in', ease(e).toFixed(3));
+      });
+    } else {
+      // stacked: each card animates on its own way up the viewport
+      cards.forEach(card => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--in', ease(clamp(1 - (r.top - vh * 0.2) / (vh * 0.55))).toFixed(3));
+      });
+    }
+  };
+
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { paint(); ticking = false; });
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  // resize recomputes straight away rather than waiting for a frame, since
+  // the layout has already changed by the time it fires
+  window.addEventListener('resize', paint);
+  window.addEventListener('load', paint);
+  still.addEventListener('change', paint);
+  paint();
 })();
 
 /* Certificates: each one takes a turn out front, on a loop. The spotlight is
