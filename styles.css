@@ -1393,7 +1393,16 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    script.js writes --d (signed, how far off centre) and --ad (its distance,
    unsigned) every frame. Both default to 0, meaning centred and upright, so
    nothing is left skewed if the script never runs. */
-.tp-why-card{--d:0;--ad:0;overflow:hidden;transition:none}
+/* Each slide is uncovered by a circle growing out of its bottom-right corner
+   until it fills the panel, exactly as the clip's dark panel sweeps in from
+   that corner. 150% is the radius needed to reach the opposite corner —
+   the diagonal is about 141% of the reference the percentage resolves
+   against, so this clears it with a little to spare. */
+.tp-why-card{
+  --d:0;--ad:0;--in:1;
+  overflow:hidden;transition:none;
+  clip-path:circle(calc(var(--in) * 150%) at 100% 100%);
+}
 /* the hover lift would fight the scroll-driven transform */
 .tp-why-card:hover{transform:none}
 
@@ -1423,34 +1432,23 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   height:100vh;height:100svh;
 }
 .tp-hs.hs-on .tp-hs-viewport{overflow:hidden;width:100%;height:100%}
-/* One point per screen, edge to edge. flex-basis:100% resolves against the
-   track, which is exactly the viewport width — using 100vw instead would
-   include the scrollbar and drift a little further out with every card. */
-.tp-hs.hs-on .tp-hs-track{
-  display:flex;flex-wrap:nowrap;align-items:stretch;
-  height:100%;gap:0;padding:0;
-  will-change:transform;
-}
+/* The slides sit on top of one another rather than in a row: each is
+   uncovered over the one beneath by its own expanding circle. */
+.tp-hs.hs-on .tp-hs-track{position:relative;display:block;height:100%;padding:0}
 .tp-hs.hs-on .tp-hs-track>.tp-why-card{
-  flex:0 0 100%;height:100%;
+  position:absolute;inset:0;width:100%;height:100%;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;gap:26px;padding:48px 40px;
   /* no box at this size — the panel itself is the surface */
   border:0;border-radius:0;box-shadow:none;
 }
+/* later slides sit above earlier ones, so each opens over the last */
+.tp-hs.hs-on .tp-why-card:nth-child(1){z-index:1}
+.tp-hs.hs-on .tp-why-card:nth-child(2){z-index:2}
+.tp-hs.hs-on .tp-why-card:nth-child(3){z-index:3}
+.tp-hs.hs-on .tp-why-card:nth-child(4){z-index:4}
+.tp-hs.hs-on .tp-why-card:nth-child(5){z-index:5}
 .tp-hs.hs-on .tp-hs-track>.tp-why-card:hover{transform:none;box-shadow:none}
-
-/* Reversed travel: lay the cards out back to front so the last one sits at
-   the left edge and the first at the right. Paired with the reversed offset
-   in script.js, that makes each card arrive from the left while the points
-   still run 1 to 5. `order` is used rather than flex-direction:row-reverse,
-   which would push the overflow off the left edge where scrollWidth cannot
-   measure it and the travel distance would come out as zero. */
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(1){order:5}
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(2){order:4}
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(3){order:3}
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(4){order:2}
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(5){order:1}
 
 /* a different ground for each point, alternating light and dark */
 .tp-hs.hs-on .tp-why-card:nth-child(1){background:#FBF6E9}
