@@ -441,65 +441,6 @@ if (form) {
   if (name) setTimeout(() => name.focus({ preventScroll: true }), 200);
 })();
 
-/* Why Choose slides: a scroll-driven entrance for the five points.
-   The first arrives diagonally from the bottom-right as the section comes up
-   the screen; the rest follow one at a time as you scroll through them.
-   Everything is computed from the current scroll position rather than fired
-   by a one-shot trigger, which is what lets it run backwards just as
-   smoothly when you scroll up. Works in both layouts: pinned and horizontal
-   on desktop, stacked on narrow screens. */
-(() => {
-  const section = document.querySelector('.tp-hs[data-hscroll]');
-  if (!section) return;
-
-  const outer = section.querySelector('[data-hs-outer]');
-  const cards = Array.from(section.querySelectorAll('.tp-why-card'));
-  if (!outer || !cards.length) return;
-
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const ease = t => 1 - Math.pow(1 - t, 3);   // settles rather than stops dead
-
-  /* Each slide's offset from the middle of the screen, as a fraction of a
-     screen: 0 when centred, ±1 one screen away. Pinned, that is measured
-     across; stacked, it is measured up and down, since that is the axis the
-     slides travel on in each layout. */
-  const paint = () => {
-    if (still.matches) {
-      cards.forEach(c => c.style.setProperty('--in', '1'));
-      return;
-    }
-
-    const vh = window.innerHeight;
-    const first = cards[0];
-
-    /* Only the first slide carries the corner wipe. It is driven by the
-       section's approach, while that slide sits still and fills the screen,
-       which is the one moment the curve is actually visible. The rest just
-       travel in from the left, so they stay fully uncovered. */
-    const lead = section.classList.contains('hs-on')
-      ? 1 - outer.getBoundingClientRect().top / (vh * 0.7)
-      : 1 - (first.getBoundingClientRect().top - vh * 0.15) / (vh * 0.6);
-
-    first.style.setProperty('--in', ease(Math.max(0, Math.min(1, lead))).toFixed(4));
-    cards.slice(1).forEach(c => c.style.setProperty('--in', '1'));
-  };
-
-  let ticking = false;
-  const onScroll = () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { paint(); ticking = false; });
-  };
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  // resize recomputes straight away rather than waiting for a frame, since
-  // the layout has already changed by the time it fires
-  window.addEventListener('resize', paint);
-  window.addEventListener('load', paint);
-  still.addEventListener('change', paint);
-  paint();
-})();
-
 /* Certificates: each one takes a turn out front, on a loop. The spotlight is
    a class, so all the sizing and easing stays in the stylesheet. */
 (() => {

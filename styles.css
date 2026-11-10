@@ -1374,121 +1374,68 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 
 /* ---------- why choose ---------- */
-.tp-why-head{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;margin-bottom:34px}
 .tp-why h2{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.12}
 .tp-why-tag{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.25rem;color:var(--black);margin:12px 0 14px}
 .tp-why-text{color:var(--muted);line-height:1.75;font-size:.93rem;max-width:560px}
 .tp-why-photo img{width:100%;border-radius:18px;aspect-ratio:16/9;object-fit:cover;
   box-shadow:0 22px 48px rgba(20,19,18,.14)}
 
-/* script.js writes --in (0 to 1) from the scroll position every frame, so the
-   reveal plays backwards just as smoothly when you scroll up. It defaults to
-   1, meaning fully uncovered, so nothing can get stuck hidden if the script
-   never runs.
+/* ---------- WHY CHOOSE: sticky heading, cards that pile up ----------
+   The heading stays put while the cards scroll past and park one on top of
+   another, each a little lower than the last so the one beneath still shows
+   its top edge. Pure CSS sticky — no script, so nothing to go wrong and it
+   runs backwards on the way up for free. */
+.tp-why-grid{
+  display:grid;grid-template-columns:.85fr 1.15fr;
+  gap:clamp(30px,4vw,64px);align-items:start;
+}
+.tp-why-intro{position:sticky;top:120px}
+.tp-why-intro h2{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.12}
 
-   The first slide is uncovered by a circle growing out of its bottom-right
-   corner — where the WhatsApp shortcut sits — until it fills the panel. It
-   can play there because that slide is still while the section comes up the
-   screen; the ones that travel sideways carry that corner off screen, so a
-   wipe on them would never be seen. They simply slide in instead.
-   150% is the radius needed to reach the opposite corner: the diagonal is
-   about 141% of what the percentage resolves against. */
+.tp-why-stack{display:flex;flex-direction:column;gap:22px;padding-bottom:12px}
 .tp-why-card{
-  --in:1;
-  overflow:hidden;transition:none;
-  clip-path:circle(calc(var(--in) * 150%) at 100% 100%);
+  position:sticky;
+  /* each card parks 16px lower than the one before it */
+  top:calc(120px + (var(--i) - 1) * 16px);
+  min-height:250px;border-radius:22px;padding:34px 34px 30px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:14px;
+  border:1px solid var(--line);
+  box-shadow:0 -14px 40px rgba(20,19,18,.16);
+  transition:border-color .35s;
 }
-/* the hover lift would fight the scroll-driven reveal */
-.tp-why-card:hover{transform:none}
-.tp-why-inner{transition:none}
-/* the pinned panels centre their contents, which now live in the wrapper */
-.tp-hs.hs-on .tp-hs-track>.tp-why-card>.tp-why-inner{
-  display:flex;flex-direction:column;align-items:center;gap:26px;width:100%;
+.tp-why-card:hover{border-color:var(--line-gold)}
+.tp-why-num{
+  position:absolute;top:26px;right:30px;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.82rem;
+  letter-spacing:.14em;opacity:.65;
 }
-
-/* Default: the five points as a plain row. If the script cannot pin the
-   section — narrow screen, reduced motion, no JS — this is what shows. */
-.tp-hs-track{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
-.tp-hs-outer{position:relative}
-.tp-hs-sticky{padding:0}
-
-/* Pinned state, added by script.js as .hs-on. The section holds still while
-   the five cards travel right to left, then the page carries on. */
-.tp-hs.hs-on .tp-hs-sticky{
-  position:sticky;top:0;
-  height:100vh;height:100svh;
-}
-.tp-hs.hs-on .tp-hs-viewport{overflow:hidden;width:100%;height:100%}
-/* One point per screen, edge to edge, travelling sideways. flex-basis:100%
-   resolves against the track, which is exactly the viewport width — 100vw
-   would include the scrollbar and drift further out with every card. */
-.tp-hs.hs-on .tp-hs-track{
-  display:flex;flex-wrap:nowrap;align-items:stretch;
-  height:100%;gap:0;padding:0;
-  will-change:transform;
-}
-.tp-hs.hs-on .tp-hs-track>.tp-why-card{
-  flex:0 0 100%;height:100%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;gap:26px;padding:48px 40px;
-  /* no box at this size — the panel itself is the surface */
-  border:0;border-radius:0;box-shadow:none;
-}
-
-/* Reversed travel: lay the cards out back to front so the last sits at the
-   left edge and the first at the right. Paired with the reversed offset in
-   script.js, each card arrives from the left while the points still run 1
-   to 5. `order` rather than flex-direction:row-reverse, which would push the
-   overflow off the left edge where scrollWidth cannot measure it. */
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(1){order:5}
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(2){order:4}
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(3){order:3}
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(4){order:2}
-.tp-hs[data-hs-reverse].hs-on .tp-why-card:nth-child(5){order:1}
-.tp-hs.hs-on .tp-hs-track>.tp-why-card:hover{transform:none;box-shadow:none}
+.tp-why-card h3{font-size:1.5rem;margin:2px 0 0}
+.tp-why-card p{font-size:.97rem;line-height:1.7;max-width:520px}
 
 /* a different ground for each point, alternating light and dark */
-.tp-hs.hs-on .tp-why-card:nth-child(1){background:#141312}
-.tp-hs.hs-on .tp-why-card:nth-child(2){background:#FBF6E9}
-.tp-hs.hs-on .tp-why-card:nth-child(3){background:linear-gradient(145deg,#EBD596,#C9A227)}
-.tp-hs.hs-on .tp-why-card:nth-child(4){background:#1C1814}
-.tp-hs.hs-on .tp-why-card:nth-child(5){background:#F2E4C2}
+.tp-why-card:nth-child(1){background:#141312}
+.tp-why-card:nth-child(2){background:#FBF6E9}
+.tp-why-card:nth-child(3){background:linear-gradient(145deg,#EBD596,#C9A227)}
+.tp-why-card:nth-child(4){background:#1C1814}
+.tp-why-card:nth-child(5){background:#F2E4C2}
 
-/* the two dark panels flip their type and icon to stay readable */
-.tp-hs.hs-on .tp-why-card:nth-child(1) h3,
-.tp-hs.hs-on .tp-why-card:nth-child(4) h3{color:#fff}
-.tp-hs.hs-on .tp-why-card:nth-child(1) p,
-.tp-hs.hs-on .tp-why-card:nth-child(4) p{color:rgba(255,255,255,.74)}
-.tp-hs.hs-on .tp-why-card:nth-child(1) .tp-ico,
-.tp-hs.hs-on .tp-why-card:nth-child(4) .tp-ico{
+/* the dark cards flip their type and icon to stay readable */
+.tp-why-card:nth-child(1) h3,.tp-why-card:nth-child(4) h3{color:#fff}
+.tp-why-card:nth-child(1) p,.tp-why-card:nth-child(4) p{color:rgba(255,255,255,.74)}
+.tp-why-card:nth-child(1) .tp-why-num,.tp-why-card:nth-child(4) .tp-why-num{color:var(--gold-light)}
+.tp-why-card:nth-child(1) .tp-ico,.tp-why-card:nth-child(4) .tp-ico{
   border-color:var(--line-gold);background:rgba(201,162,39,.16);color:var(--gold-light);
 }
-/* on the gold panel the icon reads better as a solid light disc */
-.tp-hs.hs-on .tp-why-card:nth-child(3) .tp-ico{
+/* the light ones keep the page's own ink */
+.tp-why-card:nth-child(2) h3,.tp-why-card:nth-child(3) h3,.tp-why-card:nth-child(5) h3{color:var(--black)}
+.tp-why-card:nth-child(2) p,.tp-why-card:nth-child(5) p{color:var(--muted)}
+.tp-why-card:nth-child(2) .tp-why-num,.tp-why-card:nth-child(3) .tp-why-num,
+.tp-why-card:nth-child(5) .tp-why-num{color:var(--gold-deep)}
+/* on the gold card the icon reads better as a solid light disc */
+.tp-why-card:nth-child(3) .tp-ico{
   border-color:rgba(20,19,18,.22);background:rgba(255,255,255,.55);color:#4A3A12;
 }
-.tp-hs.hs-on .tp-why-card:nth-child(3) p{color:#4A3A12}
-/* at this size the contents need to grow with the box */
-.tp-hs.hs-on .tp-hs-track>.tp-why-card .tp-ico{
-  width:148px;height:148px;flex:0 0 148px;margin-bottom:0;
-}
-.tp-hs.hs-on .tp-hs-track>.tp-why-card .tp-ico svg{width:68px;height:68px}
-.tp-hs.hs-on .tp-hs-track>.tp-why-card h3{
-  font-size:clamp(2.8rem,7.4vw,6rem);margin-bottom:0;line-height:1.04;
-  letter-spacing:-.03em;
-}
-.tp-hs.hs-on .tp-hs-track>.tp-why-card p{
-  font-size:clamp(1.25rem,2.7vw,2.2rem);line-height:1.5;max-width:1040px;
-}
-.tp-why-card{
-  background:#FBF7EE;border:1px solid var(--line-gold);border-radius:14px;padding:20px 18px 22px;
-  transition:transform .35s,box-shadow .35s,background .35s;
-}
-.tp-why-card:hover{transform:translateY(-6px);background:#fff;box-shadow:0 20px 42px rgba(201,162,39,.18)}
-.tp-why-card .tp-ico{margin-bottom:14px}
-.tp-why-card h3{font-size:.98rem;margin-bottom:8px;color:var(--black)}
-.tp-why-card p{font-size:.84rem;line-height:1.6;color:var(--muted)}
-
+.tp-why-card:nth-child(3) p{color:#4A3A12}
 /* ---------- certifications ---------- */
 .tp-cert{background:#FAF6EC}
 .tp-cert-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:40px;align-items:center}
@@ -1763,8 +1710,11 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 
 /* ---------- training page: tablet ---------- */
 @media (max-width:1080px){
-  .tp-hero-grid,.tp-why-head,.tp-cert-grid,.tp-pro-grid{grid-template-columns:1fr;gap:32px}
-  .tp-hs-track{grid-template-columns:repeat(3,1fr)}
+  .tp-hero-grid,.tp-cert-grid,.tp-pro-grid{grid-template-columns:1fr;gap:32px}
+  /* one column: the heading leads, then the cards stack beneath it */
+  .tp-why-grid{grid-template-columns:1fr;gap:28px}
+  .tp-why-intro{position:static}
+  .tp-why-card{top:calc(86px + (var(--i) - 1) * 14px);min-height:0}
   .tp-mod-grid,.tp-job-grid{grid-template-columns:repeat(4,1fr)}
   .tp-pro-bg{width:100%;opacity:.3}
   .tp-pro::after{background:linear-gradient(0deg,var(--black) 20%,rgba(11,11,10,.75) 100%)}
@@ -1786,7 +1736,6 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   .tp-hero h1{font-size:clamp(1.9rem,8.6vw,2.6rem)}
   .tp-chips{gap:14px 18px}
   .tp-chips li{flex:0 0 calc(50% - 9px)}
-  .tp-hs-track{grid-template-columns:1fr}
   /* a lighter tilt suits the smaller stacked cards */
   .tp-mod-grid,.tp-job-grid{grid-template-columns:repeat(2,1fr)}
   .tp-aification{grid-column:span 2}
