@@ -1714,22 +1714,46 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 
 /* ---------- jobs ---------- */
 .tp-jobs-sub{color:var(--muted);font-size:.95rem;margin:-14px 0 26px}
-/* four across, so the eight roles read as two even rows */
-.tp-job-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.tp-job{
-  background:linear-gradient(180deg,#fff,#FDFAF2);
-  border:1px solid var(--line);border-radius:18px;padding:34px 22px 30px;
-  min-height:190px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:18px;text-align:center;
-  box-shadow:0 2px 10px rgba(20,19,18,.04);
-  transition:transform .35s,border-color .35s,box-shadow .35s;
+
+/* ---------- jobs: gold globe with the roles fanned out beside it ----------
+   The globe stays put while the cards come past, so the two read as one
+   diagram rather than two stacked blocks. */
+.tp-jobs-stage{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(20px,3vw,48px);align-items:start}
+.tp-jobs-globe{position:sticky;top:110px}
+.tp-jobs-globe img{
+  width:100%;max-width:560px;display:block;
+  /* feathered edges, so the artwork's own background melts into the band
+     instead of showing as a pale square */
+  -webkit-mask-image:radial-gradient(closest-side,#000 68%,transparent 97%);
+  mask-image:radial-gradient(closest-side,#000 68%,transparent 97%);
 }
-.tp-job:hover{transform:translateY(-6px);border-color:var(--line-gold);box-shadow:0 18px 38px rgba(201,162,39,.20)}
-.tp-job:hover .tp-ico{background:var(--gold-grad);color:#191305}
-.tp-job .tp-ico{width:58px;height:58px;flex:0 0 58px}
-.tp-job .tp-ico svg{width:26px;height:26px}
-.tp-job b{font-family:'Outfit',sans-serif;font-weight:600;font-size:1rem;line-height:1.4;color:var(--black)}
+
+/* The cards are as wide as their column and are then pushed right along the
+   arc, so the column needs that much room spare — without it the widest
+   offsets hang past the viewport and the page gains a sideways scrollbar. */
+.tp-jobs-fan{list-style:none;display:flex;flex-direction:column;gap:10px;padding:8px 96px 8px 0}
+.tp-fan{
+  position:relative;
+  display:flex;align-items:center;gap:16px;
+  min-height:118px;padding:22px 30px;
+  background:#fff;border:1px solid var(--line-gold);
+  /* lopsided corners give the petal shape from the reference rather than
+     a plain rounded rectangle */
+  border-radius:52px 20px 58px 22px;
+  box-shadow:0 14px 34px rgba(20,19,18,.07);
+  /* --dx places it on the arc, --in brings it in from the globe */
+  opacity:var(--in,1);
+  transform:translateX(calc(var(--dx) - (1 - var(--in,1)) * 150px)) rotate(var(--rot));
+  transition:border-color .35s,box-shadow .35s;
+}
+.tp-fan:nth-child(even){border-radius:22px 56px 20px 54px}
+.tp-fan:hover{border-color:var(--gold);box-shadow:0 20px 44px rgba(201,162,39,.22)}
+.tp-fan .tp-ico{flex:0 0 52px;width:52px;height:52px}
+.tp-fan .tp-ico svg{width:24px;height:24px}
+.tp-fan b{
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:1.02rem;
+  line-height:1.3;color:var(--gold-deep);letter-spacing:.01em;
+}
 
 /* ---------- built by practitioners ---------- */
 .tp-prac-band{background:#FAF6EC}
@@ -1770,7 +1794,15 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   .tp-why-grid{grid-template-columns:1fr;gap:28px}
   .tp-why-intro{position:static}
   .tp-why-card{top:calc(10px + (var(--i) - 1) * 10px);height:calc(100svh - 70px);padding:34px 24px}
-  .tp-mod-grid,.tp-job-grid{grid-template-columns:repeat(4,1fr)}
+.tp-mod-grid{grid-template-columns:repeat(4,1fr)}
+  /* no room for the globe beside the fan — it leads, the cards follow,
+     and the arc offsets and tilts are dropped so they sit square */
+  .tp-jobs-stage{grid-template-columns:1fr;gap:24px}
+  .tp-jobs-globe{position:static;display:flex;justify-content:center}
+  .tp-jobs-globe img{max-width:380px}
+  .tp-jobs-fan{padding-right:0}
+  .tp-fan{--dx:0px !important;--rot:0deg !important;border-radius:20px;min-height:0;padding:18px 22px}
+  .tp-fan:nth-child(even){border-radius:20px}
   .tp-pro-bg{width:100%;opacity:.3}
   .tp-pro::after{background:linear-gradient(0deg,var(--black) 20%,rgba(11,11,10,.75) 100%)}
   .tp-extra-bg{width:100%;opacity:.28}
@@ -1792,7 +1824,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   .tp-chips{gap:14px 18px}
   .tp-chips li{flex:0 0 calc(50% - 9px)}
   /* a lighter tilt suits the smaller stacked cards */
-  .tp-mod-grid,.tp-job-grid{grid-template-columns:repeat(2,1fr)}
+  .tp-mod-grid{grid-template-columns:repeat(2,1fr)}
   .tp-aification{grid-column:span 2}
   /* stacked, so the horizontal rail no longer lines anything up */
   .tp-steps{flex-direction:column;align-items:center;gap:22px;padding:24px 20px;border-radius:18px}

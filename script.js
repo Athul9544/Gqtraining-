@@ -499,6 +499,46 @@ if (form) {
   paint();
 })();
 
+/* Job roles: the cards fan out from behind the globe one after another as
+   they come up the screen, and fold back on the way up. Read off the scroll
+   position each frame rather than fired once, and --in defaults to 1, so
+   without this the fan simply sits open. */
+(() => {
+  const stage = document.querySelector('[data-fan]');
+  if (!stage) return;
+
+  const cards = Array.from(stage.querySelectorAll('.tp-fan'));
+  if (!cards.length) return;
+
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const ease = t => 1 - Math.pow(1 - t, 3);
+
+  const paint = () => {
+    if (still.matches) {
+      cards.forEach(c => c.style.setProperty('--in', '1'));
+      return;
+    }
+    const vh = window.innerHeight;
+    cards.forEach(card => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--in',
+        ease(clamp(1 - (r.top - vh * 0.2) / (vh * 0.5))).toFixed(3));
+    });
+  };
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { paint(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', paint);
+  window.addEventListener('load', paint);
+  still.addEventListener('change', paint);
+  paint();
+})();
+
 /* Certificates: each one takes a turn out front, on a loop. The spotlight is
    a class, so all the sizing and easing stays in the stylesheet. */
 (() => {
