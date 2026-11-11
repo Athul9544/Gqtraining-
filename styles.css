@@ -1456,7 +1456,8 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-why-card:nth-child(3) p{color:#4A3A12}
 /* ---------- certifications ---------- */
 .tp-cert{background:#FAF6EC}
-.tp-cert-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:40px;align-items:center}
+/* the fan is the thing worth looking at, so it takes the larger share */
+.tp-cert-grid{display:grid;grid-template-columns:.66fr 1.34fr;gap:40px;align-items:center}
 .gold-eyebrow{color:var(--gold-deep);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.78rem}
 .gold-eyebrow b{color:var(--black)}
 .tp-cert-title{font-size:clamp(2.2rem,4.6vw,3.4rem);margin:4px 0 14px}
@@ -1465,19 +1466,31 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 /* The five certificates fan out and take turns out front. Every card is the
    same size underneath — the spotlight is a transform, which is what lets it
    glide from one card to the next instead of jumping. */
+/* One card width drives everything — height, padding, type and the overlap
+   are all fractions of --cw, so the fan can be resized from a single number
+   and nothing inside it goes out of proportion. The fan spans roughly
+   3.8 x --cw; that is what the breakpoints below are solving for. */
 .tp-certs{
+  /* the fan hangs out of its column to the right, so every pixel the window
+     gains past 1360 is half a pixel of room for it */
+  --cw:clamp(271px, calc((100vw - 1360px) * .155 + 271px), 330px);
+  --ch:calc(var(--cw) * 1.32);
   display:flex;align-items:center;justify-content:center;gap:0;
-  min-height:400px;
+  min-height:calc(var(--ch) + 94px);
 }
 .tp-certcard{
-  flex:0 0 232px;margin:0 -34px;padding:22px 17px;height:306px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
-  background:#fff;border:1px solid var(--line);border-radius:12px;
+  flex:0 0 var(--cw);
+  margin:0 calc(var(--cw) * -.2);
+  padding:calc(var(--cw) * .085) calc(var(--cw) * .065);
+  height:var(--ch);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:calc(var(--cw) * .027);
+  background:#fff;border:1px solid var(--line);border-radius:14px;
   box-shadow:0 14px 30px rgba(20,19,18,.12);
   transform:scale(.82);opacity:.6;z-index:1;
   transition:transform .6s cubic-bezier(.2,.7,.3,1),opacity .6s,box-shadow .6s,border-color .6s;
 }
-.tp-certcard.is-active strong{max-width:184px}
+.tp-certcard.is-active strong{max-width:calc(var(--cw) * .74)}
 .tp-certcard.is-active{
   /* the base card is bigger now, so a smaller jump still reads as featured */
   transform:scale(1.16);opacity:1;z-index:3;
@@ -1486,31 +1499,35 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 /* every card carries the full certificate wording, not just a logo.
    One set of sizes only — the active card scales the whole thing up. */
-.tp-certlogo{max-width:112px;max-height:34px;object-fit:contain;margin-bottom:4px}
-.tp-certcard .tp-yt{width:46px;height:34px}
-.tp-certcard b{font-family:'Outfit',sans-serif;font-size:1.06rem;color:var(--black)}
-.tp-certcard small{font-size:.67rem;color:var(--muted);text-align:center;line-height:1.3}
-.tp-certcard em{font-family:'Caveat',cursive;font-size:1.22rem;font-style:normal;color:var(--gold-deep)}
-.tp-certcard strong{font-size:.73rem;color:var(--black);text-align:center;line-height:1.3;max-width:138px}
+.tp-certlogo{
+  max-width:calc(var(--cw) * .44);max-height:calc(var(--cw) * .133);
+  object-fit:contain;margin-bottom:calc(var(--cw) * .014);
+}
+.tp-certcard .tp-yt{width:calc(var(--cw) * .18);height:calc(var(--cw) * .133)}
+.tp-certcard b{font-family:'Outfit',sans-serif;font-size:calc(var(--cw) * .0659);color:var(--black)}
+.tp-certcard small{font-size:calc(var(--cw) * .0416);color:var(--muted);text-align:center;line-height:1.3}
+.tp-certcard em{font-family:'Caveat',cursive;font-size:calc(var(--cw) * .0763);font-style:normal;color:var(--gold-deep)}
+.tp-certcard strong{
+  font-size:calc(var(--cw) * .0454);color:var(--black);
+  text-align:center;line-height:1.3;max-width:calc(var(--cw) * .54);
+}
 .tp-seal{
-  width:32px;height:32px;border-radius:50%;background:var(--gold-grad);
+  width:calc(var(--cw) * .125);height:calc(var(--cw) * .125);
+  border-radius:50%;background:var(--gold-grad);
   box-shadow:0 4px 10px rgba(201,162,39,.45);
 }
 
-/* The fan is nearly 850px across at full size, which is wider than the
-   column has to give once the window drops below about 1360px — it hung
-   past the viewport and the page gained a sideways scrollbar. Below that
-   the cards step down a size so the whole fan still fits. */
+/* At full size the fan is wider than the column has to give once the window
+   narrows — it used to hang off the side of the page, and because the body
+   clips sideways overflow that showed up as a silently cut-off card rather
+   than a scrollbar. From here down the width tracks the viewport instead of
+   stepping, so the cards stay as large as the space honestly allows. */
 @media (max-width:1360px){
-  .tp-certs{min-height:340px}
-  .tp-certcard{flex:0 0 196px;margin:0 -28px;padding:18px 14px;height:258px}
-  .tp-certlogo{max-width:96px;max-height:29px}
-  .tp-certcard .tp-yt{width:39px;height:29px}
-  .tp-certcard b{font-size:.92rem}
-  .tp-certcard small{font-size:.58rem}
-  .tp-certcard em{font-size:1.05rem}
-  .tp-certcard strong{font-size:.63rem;max-width:118px}
-  .tp-seal{width:27px;height:27px}
+  .tp-certs{--cw:clamp(200px, calc((100vw - 1081px) * .235 + 204px), 271px)}
+}
+@media (max-width:1080px){
+  /* one column now, so the fan is centred on the page and gets all of it */
+  .tp-certs{--cw:clamp(200px, calc(100vw * .285), 330px)}
 }
 
 /* the four-step strip under the certificates */
@@ -1845,8 +1862,8 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   .tp-prac-grid{grid-template-columns:1fr;max-width:560px}
   /* wrapped onto rows, a scaled-up card would collide with its neighbours —
      so the spotlight here is just the gold border and shadow */
-  .tp-certs{flex-wrap:wrap;gap:14px;min-height:0}
-  .tp-certcard{margin:0;transform:none;opacity:1;flex:0 0 200px;height:266px}
+  .tp-certs{--cw:min(230px, calc(100vw - 56px));flex-wrap:wrap;gap:14px;min-height:0}
+  .tp-certcard{margin:0;transform:none;opacity:1}
   .tp-certcard.is-active{transform:none}
   .tp-steps{border-radius:22px;padding:18px 20px}
 }
