@@ -1427,22 +1427,38 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;
   letter-spacing:.14em;opacity:.65;
 }
-.tp-why-card h3{font-size:clamp(2.2rem,4.6vw,3.6rem);margin:4px 0 0;letter-spacing:-.025em;line-height:1.06}
-.tp-why-card p{font-size:clamp(1.05rem,1.7vw,1.4rem);line-height:1.6;max-width:720px}
+/* All five cards come from the same supplied template, so they share one
+   type scale: the headline runs at about a tenth of the frame's width and
+   the subhead at about a thirty-fifth, which is what the artwork measures. */
+.tp-why-card h3{font-size:clamp(2.4rem,8vw,7.2rem);margin:4px 0 0;letter-spacing:-.025em;line-height:1.06}
+.tp-why-card p{font-size:clamp(1rem,2.6vw,2.3rem);line-height:1.5;max-width:none}
+/* none of the five designs carries a number or an icon */
+.tp-why-num{display:none}
 
-/* a different ground for each point, alternating light and dark */
+/* ---- the five grounds, each from its own supplied design ----
+   Card 01's artwork is two flat shapes, so it is drawn with CSS. The other
+   four are illustrations, so they ride in as photographs with the template's
+   own type painted out. Each is anchored toward the side its artwork sits
+   on, so a narrow card crops the empty half rather than the drawing. */
 .tp-why-card:nth-child(1){background:#BADAD5;border-color:rgba(32,76,75,.14)}
-.tp-why-card:nth-child(2){background:#FBF6E9}
-.tp-why-card:nth-child(3){background:linear-gradient(145deg,#EBD596,#C9A227)}
-.tp-why-card:nth-child(4){background:#1C1814}
-.tp-why-card:nth-child(5){background:#F2E4C2}
+.tp-why-card:nth-child(2){
+  background:#FFA649 url('assets/img/why-aitools.jpg') left center/cover no-repeat;
+  border-color:rgba(40,56,0,.16);
+}
+.tp-why-card:nth-child(3){
+  background:#FFF5E1 url('assets/img/why-projects.jpg') 26% center/cover no-repeat;
+  border-color:rgba(139,69,19,.14);
+}
+.tp-why-card:nth-child(4){
+  background:#4B2E21 url('assets/img/why-guidance.jpg') 22% center/cover no-repeat;
+  border-color:rgba(242,231,184,.16);
+}
+.tp-why-card:nth-child(5){
+  background:#FFFDD0 url('assets/img/why-career.jpg') right center/cover no-repeat;
+  border-color:rgba(85,107,47,.16);
+}
 
-/* ---- card 01: the mint "Practical Skills" artwork ----
-   Two flat shapes a shade darker than the ground, cut from the supplied
-   design: a notched block in the top-left corner and a pair of petals off
-   the right edge. Sized against the card's height so they keep their
-   proportions whether the card is landscape or portrait, and capped by the
-   other axis so neither one swallows a narrow card. */
+/* card 01 draws its artwork rather than loading it */
 .tp-why-art{
   position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;
   background:
@@ -1452,31 +1468,14 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-why-card:nth-child(1)>h3,.tp-why-card:nth-child(1)>p{position:relative;z-index:1}
 /* the dimming veil has to stay above the artwork and the type both */
 .tp-why-card::after{z-index:3}
-.tp-why-card:nth-child(1) h3{
-  color:#fff;
-  /* the reference sets the headline at about a tenth of the frame's width */
-  font-size:clamp(2.4rem,8vw,7.2rem);
-}
-.tp-why-card:nth-child(1) p{color:#204C4B;font-size:clamp(1rem,2.6vw,2.3rem);max-width:none}
-.tp-why-card:nth-child(1) .tp-why-num{display:none}
 
-/* the dark cards flip their type and icon to stay readable */
-.tp-why-card:nth-child(4) h3{color:#fff}
-.tp-why-card:nth-child(4) p{color:rgba(255,255,255,.74)}
-.tp-why-card:nth-child(4) .tp-why-num{color:var(--gold-light)}
-.tp-why-card:nth-child(4) .tp-ico{
-  border-color:var(--line-gold);background:rgba(201,162,39,.16);color:var(--gold-light);
-}
-/* the light ones keep the page's own ink */
-.tp-why-card:nth-child(2) h3,.tp-why-card:nth-child(3) h3,.tp-why-card:nth-child(5) h3{color:var(--black)}
-.tp-why-card:nth-child(2) p,.tp-why-card:nth-child(5) p{color:var(--muted)}
-.tp-why-card:nth-child(2) .tp-why-num,.tp-why-card:nth-child(3) .tp-why-num,
-.tp-why-card:nth-child(5) .tp-why-num{color:var(--gold-deep)}
-/* on the gold card the icon reads better as a solid light disc */
-.tp-why-card:nth-child(3) .tp-ico{
-  border-color:rgba(20,19,18,.22);background:rgba(255,255,255,.55);color:#4A3A12;
-}
-.tp-why-card:nth-child(3) p{color:#4A3A12}
+/* each design's own ink */
+.tp-why-card:nth-child(1) h3,.tp-why-card:nth-child(1) p{color:#204C4B}
+.tp-why-card:nth-child(1) h3{color:#fff}
+.tp-why-card:nth-child(2) h3,.tp-why-card:nth-child(2) p{color:#283800}
+.tp-why-card:nth-child(3) h3,.tp-why-card:nth-child(3) p{color:#8B4513}
+.tp-why-card:nth-child(4) h3,.tp-why-card:nth-child(4) p{color:#F2E7B8}
+.tp-why-card:nth-child(5) h3,.tp-why-card:nth-child(5) p{color:#556B2F}
 /* ---------- certifications ---------- */
 .tp-cert{background:#FAF6EC}
 /* the fan is the thing worth looking at, so it takes the larger share */
