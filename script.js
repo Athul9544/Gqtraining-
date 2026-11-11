@@ -457,18 +457,33 @@ if (form) {
   // ease-in-out, so a card leaves and settles gently rather than linearly
   const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
+  const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
+
   const paint = () => {
+    const vh = window.innerHeight;
+
     cards.forEach((card, i) => {
+      const r = card.getBoundingClientRect();
+
+      if (still.matches) {
+        card.style.setProperty('--cov', '0');
+        card.style.setProperty('--arr', '1');
+        return;
+      }
+
+      /* Grows from 75% to full as the card rises into view, and is already
+         there by the time it parks at the top of the stack. */
+      card.style.setProperty('--arr', ease(clamp(1 - (r.top - vh * 0.15) / (vh * 0.6))).toFixed(4));
+
       const next = cards[i + 1];
-      if (!next || still.matches) {
+      if (!next) {
         card.style.setProperty('--cov', '0');
         return;
       }
-      const r = card.getBoundingClientRect();
       const n = next.getBoundingClientRect();
       // 0 while the next card is still below, 1 once it sits right on top
       const covered = r.height > 0 ? (r.bottom - n.top) / r.height : 0;
-      card.style.setProperty('--cov', ease(Math.max(0, Math.min(1, covered))).toFixed(4));
+      card.style.setProperty('--cov', ease(clamp(covered)).toFixed(4));
     });
   };
 

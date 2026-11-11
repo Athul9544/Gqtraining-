@@ -1402,9 +1402,12 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   border:1px solid var(--line);
   /* layered rather than one flat shadow — reads as depth, not a drop */
   box-shadow:0 -2px 6px rgba(20,19,18,.05),0 -18px 50px rgba(20,19,18,.17);
-  /* as the next card covers this one it eases back into the stack */
+  /* Two scales multiplied together: --arr grows the card from 75% to full
+     as it rises into view, and --cov eases it back again once the next card
+     starts covering it. Both default to the resting state, so without the
+     script every card simply sits at full size. */
   transform-origin:50% 0;
-  transform:scale(calc(1 - var(--cov,0) * .055));
+  transform:scale(calc((.75 + var(--arr,1) * .25) * (1 - var(--cov,0) * .055)));
   transition:border-color .35s;
 }
 /* and dims a little, so the strip you can still see reads as further away */
