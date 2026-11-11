@@ -1385,20 +1385,20 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    another, each a little lower than the last so the one beneath still shows
    its top edge. Pure CSS sticky — no script, so nothing to go wrong and it
    runs backwards on the way up for free. */
-.tp-why-grid{
-  display:grid;grid-template-columns:.85fr 1.15fr;
-  gap:clamp(30px,4vw,64px);align-items:start;
-}
-.tp-why-intro{position:sticky;top:120px}
+/* heading first, then the cards stack beneath it at full screen size */
+.tp-why-grid{display:block}
+.tp-why-intro{max-width:760px;margin-bottom:36px}
 .tp-why-intro h2{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.12}
 
-.tp-why-stack{display:flex;flex-direction:column;gap:26px;padding-bottom:16px}
+.tp-why-stack{display:flex;flex-direction:column;gap:0;padding-bottom:16px}
 .tp-why-card{
   position:sticky;
-  /* each card parks 18px lower than the one before it */
-  top:calc(116px + (var(--i) - 1) * 18px);
-  min-height:330px;border-radius:28px;padding:46px 46px 42px;
-  display:flex;flex-direction:column;align-items:flex-start;gap:18px;
+  /* each card parks 14px lower, so a sliver of the one beneath still shows */
+  top:calc(14px + (var(--i) - 1) * 14px);
+  height:calc(100svh - 96px);
+  border-radius:28px;padding:56px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:22px;
   border:1px solid var(--line);
   /* layered rather than one flat shadow — reads as depth, not a drop */
   box-shadow:0 -2px 6px rgba(20,19,18,.05),0 -18px 50px rgba(20,19,18,.17);
@@ -1416,15 +1416,15 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   background:rgba(14,13,12,calc(var(--cov,0) * .28));
 }
 .tp-why-card:hover{border-color:var(--line-gold)}
-.tp-why-card .tp-ico{width:64px;height:64px;flex:0 0 64px}
-.tp-why-card .tp-ico svg{width:29px;height:29px}
+.tp-why-card .tp-ico{width:104px;height:104px;flex:0 0 104px}
+.tp-why-card .tp-ico svg{width:48px;height:48px}
 .tp-why-num{
   position:absolute;top:32px;right:36px;
   font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;
   letter-spacing:.14em;opacity:.65;
 }
-.tp-why-card h3{font-size:clamp(1.6rem,2.4vw,2.1rem);margin:4px 0 0;letter-spacing:-.02em}
-.tp-why-card p{font-size:1.06rem;line-height:1.65;max-width:560px}
+.tp-why-card h3{font-size:clamp(2.2rem,4.6vw,3.6rem);margin:4px 0 0;letter-spacing:-.025em;line-height:1.06}
+.tp-why-card p{font-size:clamp(1.05rem,1.7vw,1.4rem);line-height:1.6;max-width:720px}
 
 /* a different ground for each point, alternating light and dark */
 .tp-why-card:nth-child(1){background:#141312}
@@ -1765,7 +1765,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   /* one column: the heading leads, then the cards stack beneath it */
   .tp-why-grid{grid-template-columns:1fr;gap:28px}
   .tp-why-intro{position:static}
-  .tp-why-card{top:calc(86px + (var(--i) - 1) * 14px);min-height:0}
+  .tp-why-card{top:calc(10px + (var(--i) - 1) * 10px);height:calc(100svh - 70px);padding:34px 24px}
   .tp-mod-grid,.tp-job-grid{grid-template-columns:repeat(4,1fr)}
   .tp-pro-bg{width:100%;opacity:.3}
   .tp-pro::after{background:linear-gradient(0deg,var(--black) 20%,rgba(11,11,10,.75) 100%)}
