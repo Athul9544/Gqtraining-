@@ -1431,17 +1431,40 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-why-card p{font-size:clamp(1.05rem,1.7vw,1.4rem);line-height:1.6;max-width:720px}
 
 /* a different ground for each point, alternating light and dark */
-.tp-why-card:nth-child(1){background:#141312}
+.tp-why-card:nth-child(1){background:#BADAD5;border-color:rgba(32,76,75,.14)}
 .tp-why-card:nth-child(2){background:#FBF6E9}
 .tp-why-card:nth-child(3){background:linear-gradient(145deg,#EBD596,#C9A227)}
 .tp-why-card:nth-child(4){background:#1C1814}
 .tp-why-card:nth-child(5){background:#F2E4C2}
 
+/* ---- card 01: the mint "Practical Skills" artwork ----
+   Two flat shapes a shade darker than the ground, cut from the supplied
+   design: a notched block in the top-left corner and a pair of petals off
+   the right edge. Sized against the card's height so they keep their
+   proportions whether the card is landscape or portrait, and capped by the
+   other axis so neither one swallows a narrow card. */
+.tp-why-art{
+  position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;
+  background:
+    url('assets/img/why1-mark.png') left top / min(37%,56vh) auto no-repeat,
+    url('assets/img/why1-arc.png') right 0 top 21% / auto min(78%,58vw) no-repeat;
+}
+.tp-why-card:nth-child(1)>h3,.tp-why-card:nth-child(1)>p{position:relative;z-index:1}
+/* the dimming veil has to stay above the artwork and the type both */
+.tp-why-card::after{z-index:3}
+.tp-why-card:nth-child(1) h3{
+  color:#fff;
+  /* the reference sets the headline at about a tenth of the frame's width */
+  font-size:clamp(2.4rem,8vw,7.2rem);
+}
+.tp-why-card:nth-child(1) p{color:#204C4B;font-size:clamp(1rem,2.6vw,2.3rem);max-width:none}
+.tp-why-card:nth-child(1) .tp-why-num{display:none}
+
 /* the dark cards flip their type and icon to stay readable */
-.tp-why-card:nth-child(1) h3,.tp-why-card:nth-child(4) h3{color:#fff}
-.tp-why-card:nth-child(1) p,.tp-why-card:nth-child(4) p{color:rgba(255,255,255,.74)}
-.tp-why-card:nth-child(1) .tp-why-num,.tp-why-card:nth-child(4) .tp-why-num{color:var(--gold-light)}
-.tp-why-card:nth-child(1) .tp-ico,.tp-why-card:nth-child(4) .tp-ico{
+.tp-why-card:nth-child(4) h3{color:#fff}
+.tp-why-card:nth-child(4) p{color:rgba(255,255,255,.74)}
+.tp-why-card:nth-child(4) .tp-why-num{color:var(--gold-light)}
+.tp-why-card:nth-child(4) .tp-ico{
   border-color:var(--line-gold);background:rgba(201,162,39,.16);color:var(--gold-light);
 }
 /* the light ones keep the page's own ink */
