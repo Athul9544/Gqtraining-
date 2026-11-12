@@ -1,5 +1,75 @@
 /* Golden Qube — interactions */
 
+/* ---------------------------------------------------------------------
+   Motion
+   ---------------------------------------------------------------------
+   Scroll-driven animation that maps scroll position straight onto a
+   transform moves exactly as fast as the wheel does: it starts and stops
+   dead, and a flick reads as a jerk. iOS never does that — a gesture sets
+   a target and the view chases it, so motion keeps flowing for a moment
+   after your finger leaves the glass and eases into place.
+
+   This is that, for the scroll-driven sections. Each one reports where it
+   WANTS to be, and this loop carries the rendered value toward that target
+   on a critically-damped curve, frame-rate independent, so it behaves the
+   same at 60Hz and 120Hz. The loop sleeps as soon as everything has
+   settled, so it costs nothing when the page is still.                 */
+const Motion = (() => {
+  const painters = new Set();
+  let running = false;
+  let last = 0;
+
+  const frame = (now) => {
+    // clamp dt so a backgrounded tab doesn't resume with one giant jump
+    const dt = last ? Math.min((now - last) / 1000, 0.064) : 1 / 60;
+    last = now;
+
+    let busy = false;
+    painters.forEach(fn => { if (fn(dt)) busy = true; });
+
+    if (busy) {
+      requestAnimationFrame(frame);
+    } else {
+      running = false;
+      last = 0;
+    }
+  };
+
+  const wake = () => {
+    if (running) return;
+    running = true;
+    last = 0;
+    requestAnimationFrame(frame);
+  };
+
+  return {
+    /* fn(dt) runs every frame and returns true while it still has work.
+       Scroll, resize and load all wake the loop back up. */
+    add(fn) {
+      painters.add(fn);
+      addEventListener('scroll', wake, { passive: true });
+      addEventListener('resize', wake);
+      addEventListener('load', wake);
+      wake();
+    },
+    wake,
+
+    /* Exponential approach — the shape a critically-damped spring settles
+       on. tau is the time constant in seconds: roughly how long it takes
+       to cover the first 63% of the remaining distance. Lower is snappier.
+       Written this way it is exact for any dt, so it never depends on the
+       frame rate. */
+    toward(current, target, dt, tau) {
+      return target + (current - target) * Math.exp(-dt / tau);
+    },
+
+    /* close enough that another frame would not change a rendered pixel */
+    settled(current, target) {
+      return Math.abs(current - target) < 0.0008;
+    }
+  };
+})();
+
 // Mobile navigation
 const burger = document.getElementById('burger');
 const nav = document.getElementById('nav');
@@ -459,44 +529,52 @@ if (form) {
 
   const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
 
-  const paint = () => {
+  // what is on screen now, chasing what the scroll position asks for
+  const shown = cards.map(() => ({ arr: 1, cov: 0 }));
+  let primed = false;
+
+  const paint = (dt) => {
     const vh = window.innerHeight;
+    let busy = false;
 
     cards.forEach((card, i) => {
-      const r = card.getBoundingClientRect();
-
       if (still.matches) {
         card.style.setProperty('--cov', '0');
         card.style.setProperty('--arr', '1');
         return;
       }
 
+      const r = card.getBoundingClientRect();
+
       /* Grows from 75% to full as the card rises into view, and is already
          there by the time it parks at the top of the stack. */
-      card.style.setProperty('--arr', ease(clamp(1 - (r.top - vh * 0.15) / (vh * 0.6))).toFixed(4));
+      const arr = ease(clamp(1 - (r.top - vh * 0.15) / (vh * 0.6)));
 
       const next = cards[i + 1];
-      if (!next) {
-        card.style.setProperty('--cov', '0');
-        return;
-      }
-      const n = next.getBoundingClientRect();
       // 0 while the next card is still below, 1 once it sits right on top
-      const covered = r.height > 0 ? (r.bottom - n.top) / r.height : 0;
-      card.style.setProperty('--cov', ease(clamp(covered)).toFixed(4));
+      const cov = next
+        ? ease(clamp(r.height > 0 ? (r.bottom - next.getBoundingClientRect().top) / r.height : 0))
+        : 0;
+
+      const s = shown[i];
+      if (!primed) { s.arr = arr; s.cov = cov; }
+
+      /* The arrival is the one you watch, so it trails a little further
+         behind the scroll; the recede is a background cue and keeps up. */
+      s.arr = Motion.toward(s.arr, arr, dt, 0.13);
+      s.cov = Motion.toward(s.cov, cov, dt, 0.10);
+      if (!Motion.settled(s.arr, arr) || !Motion.settled(s.cov, cov)) busy = true;
+
+      card.style.setProperty('--arr', s.arr.toFixed(4));
+      card.style.setProperty('--cov', s.cov.toFixed(4));
     });
+
+    primed = true;
+    return busy;
   };
 
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { paint(); ticking = false; });
-  }, { passive: true });
-  window.addEventListener('resize', paint);
-  window.addEventListener('load', paint);
-  still.addEventListener('change', paint);
-  paint();
+  Motion.add(paint);
+  still.addEventListener('change', Motion.wake);
 })();
 
 /* Job roles: the cards fan out from behind the globe one after another as
@@ -514,29 +592,36 @@ if (form) {
   const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
   const ease = t => 1 - Math.pow(1 - t, 3);
 
-  const paint = () => {
+  const shown = cards.map(() => 1);
+  let primed = false;
+
+  const paint = (dt) => {
     if (still.matches) {
       cards.forEach(c => c.style.setProperty('--in', '1'));
-      return;
+      return false;
     }
     const vh = window.innerHeight;
-    cards.forEach(card => {
+    let busy = false;
+
+    cards.forEach((card, i) => {
       const r = card.getBoundingClientRect();
-      card.style.setProperty('--in',
-        ease(clamp(1 - (r.top - vh * 0.2) / (vh * 0.5))).toFixed(3));
+      const want = ease(clamp(1 - (r.top - vh * 0.2) / (vh * 0.5)));
+
+      if (!primed) shown[i] = want;
+      /* a touch slower down the fan, so the cards arrive in a run rather
+         than all snapping to the same beat */
+      shown[i] = Motion.toward(shown[i], want, dt, 0.12 + i * 0.012);
+      if (!Motion.settled(shown[i], want)) busy = true;
+
+      card.style.setProperty('--in', shown[i].toFixed(3));
     });
+
+    primed = true;
+    return busy;
   };
 
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { paint(); ticking = false; });
-  }, { passive: true });
-  window.addEventListener('resize', paint);
-  window.addEventListener('load', paint);
-  still.addEventListener('change', paint);
-  paint();
+  Motion.add(paint);
+  still.addEventListener('change', Motion.wake);
 })();
 
 /* Certificates: each one takes a turn out front, on a loop. The spotlight is
@@ -638,17 +723,23 @@ document.querySelectorAll('[data-stagger]').forEach(grid => {
     outer.style.height = Math.round(window.innerHeight * 2.15) + 'px';
   };
 
-  const paint = () => {
+  const shown = items.map(() => 1);
+  let shownRail = 1;
+  let primed = false;
+
+  const paint = (dt) => {
     const vh = window.innerHeight;
     const n = items.length;
 
     if (still.matches) {
       items.forEach(el => el.style.setProperty('--r', '1'));
       if (rail) rail.style.setProperty('--p', '1');
-      return;
+      return false;
     }
 
     const pinned = section2 && section2.classList.contains('pin-on');
+    const want = new Array(n);
+    let wantRail;
 
     if (pinned) {
       const span = outer.offsetHeight - vh;
@@ -657,43 +748,51 @@ document.querySelectorAll('[data-stagger]').forEach(grid => {
          the slots run three wide so one starts before the last has finished
          and the arrivals flow rather than march */
       const step = 1 / (n + 2);
+      for (let i = 0; i < n; i++) want[i] = ease(clamp((p - i * step) / (step * 3)));
+      wantRail = p;
+    } else {
       items.forEach((el, i) => {
-        el.style.setProperty('--r', ease(clamp((p - i * step) / (step * 3))).toFixed(3));
+        const r = el.getBoundingClientRect();
+        /* a small offset per column makes a row arrive in sequence rather
+           than all at once, without needing a timed delay */
+        const stagger = (i % 7) * 0.05;
+        want[i] = ease(clamp(1 - (r.top - vh * 0.18) / (vh * 0.52) - stagger));
       });
-      if (rail) rail.style.setProperty('--p', p.toFixed(3));
-      return;
+      if (rail) {
+        const g = grid.getBoundingClientRect();
+        // 0 as the grid reaches the bottom of the screen, 1 once it has passed
+        wantRail = clamp((vh - g.top - vh * 0.25) / (g.height + vh * 0.5));
+      }
     }
 
-    items.forEach((el, i) => {
-      const r = el.getBoundingClientRect();
-      /* a small offset per column makes a row arrive in sequence rather than
-         all at once, without needing a timed delay */
-      const stagger = (i % 7) * 0.05;
-      const raw = 1 - (r.top - vh * 0.18) / (vh * 0.52) - stagger;
-      el.style.setProperty('--r', ease(clamp(raw)).toFixed(3));
-    });
-
-    if (rail) {
-      const g = grid.getBoundingClientRect();
-      // 0 as the grid reaches the bottom of the screen, 1 once it has passed
-      const span = g.height + vh * 0.5;
-      rail.style.setProperty('--p', clamp((vh - g.top - vh * 0.25) / span).toFixed(3));
+    let busy = false;
+    for (let i = 0; i < n; i++) {
+      if (!primed) shown[i] = want[i];
+      shown[i] = Motion.toward(shown[i], want[i], dt, 0.15);
+      if (!Motion.settled(shown[i], want[i])) busy = true;
+      items[i].style.setProperty('--r', shown[i].toFixed(3));
     }
+    if (rail && wantRail !== undefined) {
+      if (!primed) shownRail = wantRail;
+      // the rail is a readout, so it tracks the scroll more closely
+      shownRail = Motion.toward(shownRail, wantRail, dt, 0.07);
+      if (!Motion.settled(shownRail, wantRail)) busy = true;
+      rail.style.setProperty('--p', shownRail.toFixed(3));
+    }
+
+    primed = true;
+    return busy;
   };
 
-  const relayout = () => { measure(); place(); paint(); };
+  const relayout = () => { measure(); place(); primed = false; Motion.wake(); };
   narrow.addEventListener('change', relayout);
-
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { paint(); ticking = false; });
-  }, { passive: true });
   window.addEventListener('resize', relayout);
   window.addEventListener('load', relayout);
   still.addEventListener('change', relayout);
-  relayout();
+
+  measure();
+  place();
+  Motion.add(paint);
 });
 
 /* Tools marquee (training page): duplicate each row's chips so the CSS can
