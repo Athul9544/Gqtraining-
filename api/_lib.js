@@ -356,7 +356,9 @@ function normalisePosts(input) {
     seen.add(slug);
 
     return {
-      id: text(item.id, 40) || slug,
+      /* The cap has to be at least the slug's 70, or an id defaulted from a
+         long slug is quietly truncated on every save. */
+      id: text(item.id, 80) || slug,
       slug,
       title,
       tag: text(item.tag, 40),
