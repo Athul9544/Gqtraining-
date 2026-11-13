@@ -226,55 +226,57 @@
 <!-- The ring turns on its own; styles.css carries the explanation of how
      the cards stay upright while it does. The thumbnails are stored with
      the site because Instagram's own image URLs are signed and expire. -->
-<section class="band vs" id="videos">
+<section class="vs" id="videos" data-vs>
+ <div class="vs-outer" data-vs-outer>
+  <div class="vs-sticky">
   <div class="shell">
     <div class="vs-head reveal">
       <p class="eyebrow center-eyebrow">Watch</p>
       <h2>See It <span class="gold">In Action</span></h2>
       <p class="vs-sub">Short reels from our trainers on what the one-on-one training
-        actually covers. Tap any one to watch it on Instagram.</p>
+        actually covers. Tap any card to play it.</p>
     </div>
 
     <div class="vs-stage reveal">
       <div class="vs-ring">
         <div class="vs-slot" style="--i:0">
-          <a class="vs-card" style="--tilt:-5deg" href="https://www.instagram.com/reel/DZHSA55Caqy/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Training for Owners">
+          <a class="vs-card" style="--tilt:-5deg" data-reel="DZHSA55Caqy" href="https://www.instagram.com/reel/DZHSA55Caqy/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Training for Owners">
             <img src="assets/img/reels/DZHSA55Caqy.jpg" alt="" width="360" height="640" loading="lazy" decoding="async">
             <span class="vs-label">Training for Owners</span>
           </a>
         </div>
         <div class="vs-slot" style="--i:1">
-          <a class="vs-card" style="--tilt:4deg" href="https://www.instagram.com/reel/DbDvuhcAV4K/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Why Owners Learn">
+          <a class="vs-card" style="--tilt:4deg" data-reel="DbDvuhcAV4K" href="https://www.instagram.com/reel/DbDvuhcAV4K/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Why Owners Learn">
             <img src="assets/img/reels/DbDvuhcAV4K.jpg" alt="" width="360" height="640" loading="lazy" decoding="async">
             <span class="vs-label">Why Owners Learn</span>
           </a>
         </div>
         <div class="vs-slot" style="--i:2">
-          <a class="vs-card" style="--tilt:-3deg" href="https://www.instagram.com/reel/DRR5_cjCfRH/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Personal Training">
+          <a class="vs-card" style="--tilt:-3deg" data-reel="DRR5_cjCfRH" href="https://www.instagram.com/reel/DRR5_cjCfRH/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Personal Training">
             <img src="assets/img/reels/DRR5_cjCfRH.jpg" alt="" width="360" height="640" loading="lazy" decoding="async">
             <span class="vs-label">Personal Training</span>
           </a>
         </div>
         <div class="vs-slot" style="--i:3">
-          <a class="vs-card" style="--tilt:6deg" href="https://www.instagram.com/reel/DaSxh42GFFn/" target="_blank" rel="noopener" aria-label="Watch on Instagram: AI Video Editing">
+          <a class="vs-card" style="--tilt:6deg" data-reel="DaSxh42GFFn" href="https://www.instagram.com/reel/DaSxh42GFFn/" target="_blank" rel="noopener" aria-label="Watch on Instagram: AI Video Editing">
             <img src="assets/img/reels/DaSxh42GFFn.jpg" alt="" width="360" height="640" loading="lazy" decoding="async">
             <span class="vs-label">AI Video Editing</span>
           </a>
         </div>
         <div class="vs-slot" style="--i:4">
-          <a class="vs-card" style="--tilt:-6deg" href="https://www.instagram.com/reel/DaYCF8YiIvE/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Intensive Course">
+          <a class="vs-card" style="--tilt:-6deg" data-reel="DaYCF8YiIvE" href="https://www.instagram.com/reel/DaYCF8YiIvE/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Intensive Course">
             <img src="assets/img/reels/DaYCF8YiIvE.jpg" alt="" width="360" height="640" loading="lazy" decoding="async">
             <span class="vs-label">Intensive Course</span>
           </a>
         </div>
         <div class="vs-slot" style="--i:5">
-          <a class="vs-card" style="--tilt:3deg" href="https://www.instagram.com/reel/DbauP9_IErW/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Inside the Course">
+          <a class="vs-card" style="--tilt:3deg" data-reel="DbauP9_IErW" href="https://www.instagram.com/reel/DbauP9_IErW/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Inside the Course">
             <img src="assets/img/reels/DbauP9_IErW.jpg" alt="" width="360" height="640" loading="lazy" decoding="async">
             <span class="vs-label">Inside the Course</span>
           </a>
         </div>
         <div class="vs-slot" style="--i:6">
-          <a class="vs-card" style="--tilt:-4deg" href="https://www.instagram.com/reel/DbVnto_kfXr/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Join the Batch">
+          <a class="vs-card" style="--tilt:-4deg" data-reel="DbVnto_kfXr" href="https://www.instagram.com/reel/DbVnto_kfXr/" target="_blank" rel="noopener" aria-label="Watch on Instagram: Join the Batch">
             <img src="assets/img/reels/DbVnto_kfXr.jpg" alt="" width="360" height="640" loading="lazy" decoding="async">
             <span class="vs-label">Join the Batch</span>
           </a>
@@ -282,11 +284,26 @@
       </div>
     </div>
 
-    <div class="vs-cta reveal">
-      <a href="contact.html#enquiry" class="btn btn-outline small">Ask Us About Training <i>&#8594;</i></a>
-    </div>
   </div>
+  </div>
+
+  <!-- Outside the pinned screen on purpose: it would otherwise take height
+       the ring needs, and here it arrives just as the circle completes. -->
+  <div class="shell vs-cta reveal">
+    <a href="https://www.instagram.com/goldenqube_digital/" target="_blank" rel="noopener" class="btn btn-outline small">More on Instagram <i>&#8594;</i></a>
+  </div>
+ </div>
 </section>
+
+<!-- The reel player. Empty until a card is tapped: the iframe's src is set
+     on open and cleared on close, which is also what stops playback. -->
+<div class="vs-lightbox" id="vs-lightbox" hidden>
+  <div class="vs-lb-backdrop" data-vs-close></div>
+  <div class="vs-lb-panel" role="dialog" aria-modal="true" aria-label="Reel player">
+    <button class="vs-lb-close" type="button" data-vs-close aria-label="Close the video">&#215;</button>
+    <iframe id="vs-lb-frame" title="Instagram reel" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen scrolling="no"></iframe>
+  </div>
+</div>
 
 <!-- ============ 07. TOOLS ============ -->
 <section class="band light tp-tools" id="tools">

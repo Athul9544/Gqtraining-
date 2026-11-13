@@ -2068,7 +2068,22 @@ p,li{text-wrap:pretty}
 
    Geometry is driven by --n (how many cards) so adding or removing
    a reel re-spaces the ring on its own. */
-.vs{background:var(--off);padding:62px 0;overflow:hidden}
+.vs{background:var(--off)}
+/* No overflow:hidden anywhere up this chain — it would turn an ancestor
+   into the scrollport and the sticky pin below would stop working. */
+.vs-outer{position:relative}          /* JS gives this its height when pinned */
+.vs-sticky{padding:62px 0}
+/* The section holds still while the cards arrive, so the page cannot move
+   on until the circle is whole. JS adds pin-on only where there is room.
+
+   Padding is cut right back once pinned: the heading and the ring have to
+   share a single screen, and every pixel spent here is a pixel taken off
+   the ring's diameter. */
+.vs.pin-on .vs-sticky{
+  position:sticky;top:0;min-height:100vh;
+  padding:24px 0;
+  display:flex;flex-direction:column;justify-content:center;
+}
 .vs-head{text-align:center;max-width:620px;margin:0 auto 10px}
 .vs-head h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:12px}
 .vs-sub{color:var(--muted);line-height:1.6}
@@ -2076,13 +2091,18 @@ p,li{text-wrap:pretty}
 .vs-stage{
   --n:7;                      /* number of cards on the ring */
   --dur:42s;                  /* one full turn */
-  --card:25%;                 /* card width, as a share of the stage */
-  /* Just wide enough that neighbours touch rather than bury each
-     other — any tighter and a card's label disappears under the
-     next one. */
-  --radius:30.5%;             /* distance from the centre */
+  --card:32%;                 /* card width, as a share of the stage */
+  /* Close enough that neighbours overlap the way the cards in the
+     reference clip do, without a label vanishing under the next one. */
+  --radius:32%;               /* distance from the centre */
+  --rise:58vh;                /* how far below a card starts its climb */
   position:relative;
-  width:min(620px,92vw);
+  /* Sized against the short edge too: while pinned, the heading and the
+     ring share one screen, so on a short laptop display the ring gives
+     way rather than pushing the heading off the top. A card's far corner
+     sits about 1.15x the stage width apart, which is what 65vh leaves
+     room for once the heading has taken its share. */
+  width:min(760px,94vw,65vh);
   aspect-ratio:1;
   margin:0 auto;
 }
@@ -2103,15 +2123,28 @@ p,li{text-wrap:pretty}
   display:grid;place-items:center;
 }
 
+/* --r is how far this card has arrived, 0 to 1, written by script.js from
+   the scroll position. At 0 it waits below the fold; at 1 it sits on the
+   ring.
+
+   The lift is plain translateY even while the ring turns, and it still
+   reads as straight up the screen: the card's own counter-rotation has
+   already cancelled the ring's, so by the time this transform applies,
+   the card's axes are the screen's axes again. */
 .vs-card{
   position:relative;display:block;
   width:var(--card);aspect-ratio:4/5;
   border-radius:14px;overflow:hidden;
   background:var(--card-dark);
   box-shadow:0 14px 30px rgba(20,19,18,.22),0 2px 6px rgba(20,19,18,.14);
-  transform:rotate(var(--tilt,0deg));
+  opacity:var(--r,1);
+  transform:
+    translateY(calc((1 - var(--r,1)) * var(--rise,58vh)))
+    scale(calc(.68 + .32 * var(--r,1)))
+    rotate(var(--tilt,0deg));
   animation:vs-unspin var(--dur) linear infinite;
   transition:box-shadow .35s var(--ease-soft,ease);
+  cursor:pointer;
 }
 .vs-card img{width:100%;height:100%;object-fit:cover}
 
@@ -2140,17 +2173,53 @@ p,li{text-wrap:pretty}
 @keyframes vs-spin{from{rotate:0deg}to{rotate:360deg}}
 @keyframes vs-unspin{from{rotate:0deg}to{rotate:-360deg}}
 
-.vs-cta{text-align:center;margin-top:34px}
+.vs-cta{text-align:center;padding-bottom:62px}
+.vs:not(.pin-on) .vs-cta{margin-top:34px}
 
-/* the ring is decoration; nobody should have to sit through it */
+/* The ring is decoration; nobody should have to sit through it. The
+   cards are also pinned to arrived, so turning the motion off cannot
+   leave them stranded below the fold at opacity 0. */
 @media (prefers-reduced-motion:reduce){
   .vs-ring,.vs-card{animation:none}
+  .vs-card{--r:1}
 }
+
+/* ---- the player ------------------------------------------------
+   Tapping a card opens the reel here rather than sending the visitor
+   off to Instagram. The anchor keeps its real href underneath, so
+   middle-click, "open in new tab" and a JS failure all still work. */
+.vs-lightbox{
+  position:fixed;inset:0;z-index:120;
+  display:grid;place-items:center;padding:20px;
+}
+.vs-lightbox[hidden]{display:none}
+.vs-lb-backdrop{position:absolute;inset:0;background:rgba(8,8,7,.82);backdrop-filter:blur(3px)}
+/* The strip of padding at the top is the close button's own bar. Without
+   it the button lands on the embed's "View profile" button, and the two
+   sit on top of each other. */
+.vs-lb-panel{
+  position:relative;
+  width:min(420px,92vw);height:min(760px,86vh);
+  padding-top:44px;
+  border-radius:16px;overflow:hidden;
+  background:var(--black-2);
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+.vs-lb-panel iframe{width:100%;height:100%;border:0;display:block;background:var(--black-2)}
+.vs-lb-close{
+  position:absolute;top:6px;right:8px;z-index:2;
+  width:32px;height:32px;border:0;border-radius:50%;
+  background:var(--gold);color:var(--black);
+  font-size:1.2rem;line-height:1;cursor:pointer;
+  display:grid;place-items:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
+.vs-lb-close:hover{background:var(--gold-light)}
 
 /* On a phone the ring would shrink the cards past reading size, so
    the same cards become a swipeable row instead. */
 @media (max-width:640px){
-  .vs{padding:48px 0}
+  .vs-sticky{padding:48px 0}
   .vs-stage{
     width:auto;aspect-ratio:auto;
     margin:0 -28px;padding:4px 28px 18px;
@@ -2161,9 +2230,13 @@ p,li{text-wrap:pretty}
   .vs-stage::-webkit-scrollbar{display:none}
   .vs-ring{position:static;display:contents;animation:none}
   .vs-slot{position:static;transform:none;display:block;scroll-snap-align:center}
+  /* opacity and transform both key off --r, so the row has to declare
+     the cards arrived — the pin that would otherwise raise them is off
+     at this width */
   .vs-card{
-    width:44vw;max-width:210px;animation:none;transform:none;
+    --r:1;
+    width:52vw;max-width:260px;animation:none;transform:none;opacity:1;
     box-shadow:0 10px 24px rgba(20,19,18,.2);
   }
-  .vs-card .vs-label{font-size:.72rem;padding:28px 10px 10px}
+  .vs-card .vs-label{font-size:.78rem;padding:30px 12px 11px}
 }

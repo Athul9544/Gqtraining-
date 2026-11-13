@@ -841,5 +841,128 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   });
 });
 
+/* ---------------------------------------------------------------------
+   Reel ring (business page)
+   ---------------------------------------------------------------------
+   Two jobs: raise the cards into the circle as the section is scrolled
+   through, and open a reel in the player when one is tapped.          */
+(() => {
+  const section = document.querySelector('[data-vs]');
+  if (!section) return;
+
+  const outer = section.querySelector('[data-vs-outer]');
+  const stage = section.querySelector('.vs-stage');
+  const cards = Array.from(section.querySelectorAll('.vs-card'));
+  if (!outer || !stage || !cards.length) return;
+
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  /* Below this the ring is laid out as a swipeable row instead, and a row
+     has nothing to assemble — the CSS already shows every card. */
+  const narrow = window.matchMedia('(max-width: 640px)');
+  const clamp = v => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const ease = t => 1 - Math.pow(1 - t, 3);
+
+  /* ---- the climb ---- */
+
+  const measure = () => {
+    if (narrow.matches || still.matches) {
+      section.classList.remove('pin-on');
+      outer.style.height = '';
+      cards.forEach(c => c.style.setProperty('--r', '1'));
+      return;
+    }
+    section.classList.add('pin-on');
+    /* One screen held still, plus most of another to bring the seven in.
+       Any longer and the circle sits finished while the page refuses to
+       move on, which reads as the scroll having jammed. */
+    outer.style.height = Math.round(window.innerHeight * 1.95) + 'px';
+  };
+
+  const shown = cards.map(() => 0);
+  let primed = false;
+
+  const paint = (dt) => {
+    if (!section.classList.contains('pin-on')) {
+      if (!primed) { cards.forEach(c => c.style.setProperty('--r', '1')); primed = true; }
+      return false;
+    }
+
+    const span = outer.offsetHeight - window.innerHeight;
+    const p = span > 0 ? clamp(-outer.getBoundingClientRect().top / span) : 0;
+
+    /* Overlapping windows, so the cards flow in one after another rather
+       than marching: each gets its own slot, but a slot is three times
+       the gap between starts, so the next lifts off before the last has
+       landed. They finish together by about 80% of the scroll, leaving a
+       beat with the circle whole before the page moves on. */
+    const n = cards.length;
+    const step = 0.8 / (n + 2);
+
+    let busy = false;
+    for (let i = 0; i < n; i++) {
+      const want = ease(clamp((p - i * step) / (step * 3)));
+      if (!primed) shown[i] = want;
+      shown[i] = Motion.toward(shown[i], want, dt, 0.13);
+      if (!Motion.settled(shown[i], want)) busy = true;
+      cards[i].style.setProperty('--r', shown[i].toFixed(3));
+    }
+
+    primed = true;
+    return busy;
+  };
+
+  const relayout = () => { measure(); primed = false; Motion.wake(); };
+  window.addEventListener('resize', relayout);
+  window.addEventListener('load', relayout);
+  narrow.addEventListener('change', relayout);
+  still.addEventListener('change', relayout);
+
+  measure();
+  Motion.add(paint);
+
+  /* ---- the player ---- */
+
+  const box = document.getElementById('vs-lightbox');
+  const frame = document.getElementById('vs-lb-frame');
+  if (!box || !frame) return;
+
+  let lastFocus = null;
+
+  const open = (code) => {
+    lastFocus = document.activeElement;
+    frame.src = 'https://www.instagram.com/reel/' + encodeURIComponent(code) + '/embed/';
+    box.hidden = false;
+    document.body.style.overflow = 'hidden';
+    const close = box.querySelector('.vs-lb-close');
+    if (close) close.focus();
+  };
+
+  const close = () => {
+    box.hidden = true;
+    frame.src = '';                      // this is what stops the video
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  };
+
+  cards.forEach(card => {
+    card.addEventListener('click', e => {
+      const code = card.dataset.reel;
+      /* Let the browser do its usual thing for a new tab, a middle click
+         or a modified click — the href is still the real reel. */
+      if (!code || e.defaultPrevented || e.button !== 0 ||
+          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      open(code);
+    });
+  });
+
+  box.addEventListener('click', e => {
+    if (e.target.hasAttribute('data-vs-close')) close();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !box.hidden) close();
+  });
+})();
+
 // Footer year
 document.getElementById('year').textContent = new Date().getFullYear();
