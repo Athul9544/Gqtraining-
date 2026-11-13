@@ -1374,7 +1374,8 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 
 .tp-hero-art{position:relative;display:flex;justify-content:center}
 .tp-hero-art img{
-  width:100%;max-width:460px;border-radius:20px;
+  /* fills its column now rather than sitting inset in it */
+  width:100%;max-width:520px;border-radius:20px;
   /* the photo's own 1672x941 — the slot matches it, so nothing is cropped */
   aspect-ratio:1672/941;object-fit:cover;object-position:50% 50%;
   box-shadow:0 26px 60px rgba(20,19,18,.16);
