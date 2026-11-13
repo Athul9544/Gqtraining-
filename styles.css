@@ -1393,7 +1393,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    runs backwards on the way up for free. */
 /* heading first, then the cards stack beneath it at full screen size */
 .tp-why-grid{display:block}
-.tp-why-intro{max-width:760px;margin-top:32px;margin-bottom:36px}
+.tp-why-intro{max-width:760px;margin-top:40px;margin-bottom:36px}
 .tp-why-intro h2{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.12}
 
 .tp-why-stack{display:flex;flex-direction:column;gap:0;padding-bottom:16px}
