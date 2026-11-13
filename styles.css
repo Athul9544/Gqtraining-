@@ -1375,7 +1375,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-hero-art{position:relative;display:flex;justify-content:center}
 .tp-hero-art img{
   width:100%;max-width:460px;border-radius:20px;
-  aspect-ratio:4/3.4;object-fit:cover;object-position:50% 25%;
+  aspect-ratio:1;object-fit:cover;object-position:50% 25%;
   box-shadow:0 26px 60px rgba(20,19,18,.16);
 }
 
