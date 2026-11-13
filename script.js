@@ -873,15 +873,38 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
      than several in the air at once. */
   const TRAVEL = 0.72;
 
+  const head = section.querySelector('.vs-head');
+
+  /* The stylesheet can only guess at the ring's size with a vh fraction,
+     and one fraction cannot be right for every screen: tuned for a short
+     laptop it wastes a tall display, tuned for a tall one it pushes the
+     heading off a short one. Measuring the space actually left over gets
+     the largest ring that still fits, on every screen.
+
+     Height is what binds — the ring is as wide as it is tall — so this
+     is what decides how big the cards can be. */
+  const fit = () => {
+    if (!head) return;
+    const pad = 48 + 12;                       // pinned padding, plus a hair
+    const spare = window.innerHeight - head.getBoundingClientRect().height - pad;
+    /* the vertical extent, not the radial one — see --reach-y */
+    const reachY = parseFloat(getComputedStyle(stage).getPropertyValue('--reach-y')) || 0.605;
+    const byHeight = spare / (2 * reachY);       // the ring spills past its box
+    const byWidth = Math.min(700, window.innerWidth * 0.94);
+    stage.style.setProperty('--stage', Math.round(Math.max(260, Math.min(byHeight, byWidth))) + 'px');
+  };
+
   const measure = () => {
     if (narrow.matches || still.matches) {
       section.classList.remove('pin-on');
       outer.style.height = '';
+      stage.style.removeProperty('--stage');
       cards.forEach(c => c.style.setProperty('--r', '1'));
       stage.style.setProperty('--spin', '0deg');
       return;
     }
     section.classList.add('pin-on');
+    fit();
     /* One screen held still, plus enough again to give all seven cards a
        scroll of their own. Seven separate arrivals need more runway than
        seven overlapping ones did. */
@@ -920,14 +943,24 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   document.addEventListener('pointerleave', () => { hasMouse = false; Motion.wake(); });
 
   /* The ring's full reach: the orbit itself plus half a card's diagonal,
-     so the cards count as well as the hole in the middle. */
+     so the cards count as well as the hole in the middle. Derived from
+     --radius and --card in the stylesheet, which is where the ring's
+     geometry is actually decided — hard-coding it here would leave this
+     silently wrong the next time a card changes size. */
+  const ringReach = () => {
+    const v = parseFloat(getComputedStyle(stage).getPropertyValue('--reach'));
+    return v > 0 ? v : 0.648;
+  };
+  let reach = 0.648;
+  const remeasureReach = () => { reach = ringReach(); };
+
   const overRing = () => {
     if (!hasMouse) return false;
     const r = stage.getBoundingClientRect();
     const dx = px - (r.left + r.width / 2);
     const dy = py - (r.top + r.height / 2);
-    const reach = r.width * 0.58;
-    return dx * dx + dy * dy <= reach * reach;
+    const far = r.width * reach;
+    return dx * dx + dy * dy <= far * far;
   };
 
   const paint = (dt) => {
@@ -965,7 +998,7 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
     return busy;
   };
 
-  const relayout = () => { measure(); primed = false; Motion.wake(); };
+  const relayout = () => { measure(); remeasureReach(); primed = false; Motion.wake(); };
   window.addEventListener('resize', relayout);
   window.addEventListener('load', relayout);
   narrow.addEventListener('change', relayout);
@@ -981,6 +1014,7 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   }).observe(stage);
 
   measure();
+  remeasureReach();
   Motion.add(paint);
 
   /* ---- the player ---- */

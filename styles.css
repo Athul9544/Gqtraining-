@@ -2084,26 +2084,51 @@ p,li{text-wrap:pretty}
   padding:24px 0;
   display:flex;flex-direction:column;justify-content:center;
 }
-.vs-head{text-align:center;max-width:620px;margin:0 auto 10px}
+/* Wide enough to keep the standfirst on one line: while pinned, a second
+   line costs the ring about 25px of diameter. */
+.vs-head{text-align:center;max-width:760px;margin:0 auto 10px}
 .vs-head h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:12px}
 .vs-sub{color:var(--muted);line-height:1.6}
 
 .vs-stage{
   --n:7;                      /* number of cards on the ring */
-  --card:32%;                 /* card width, as a share of the stage */
+  --card:36%;                 /* card width, as a share of the stage */
   /* Close enough that neighbours overlap the way the cards in the
-     reference clip do, without a label vanishing under the next one. */
-  --radius:32%;               /* distance from the centre */
+     reference clip do, without a label vanishing under the next one.
+     Past roughly this ratio the cards stop getting bigger anyway: a
+     wider card forces a smaller stage to keep the ring on one screen,
+     and the two cancel out. */
+  /* The orbit widens with the cards. Holding it still would have let
+     them crowd into the middle and close the hole, and the hole is what
+     makes it read as a ring rather than a pile. */
+  --radius:36%;               /* distance from the centre */
+  /* How far the ring spills past its own box, in stage widths.
+
+     Two numbers, because they answer different questions. --reach is
+     radial, to the far corner of a card, and the cursor test wants that
+     one: generous, so pointing anywhere on a card counts. --reach-y is
+     the vertical extent of a card sitting at the top of the orbit, which
+     is smaller because the cards are barely tilted — a corner only
+     reaches the diagonal at 45 degrees. Reserving the diagonal would
+     throw away about 7% of the height the ring could have used. */
+  --reach:.648;               /* orbit + half a card's diagonal */
+  --reach-y:.605;             /* orbit + half a card's height, tilted */
+  --spill:calc(var(--stage) * (var(--reach-y) - .5));
   --rise:58vh;                /* how far below a card starts its climb */
-  position:relative;
+
   /* Sized against the short edge too: while pinned, the heading and the
      ring share one screen, so on a short laptop display the ring gives
-     way rather than pushing the heading off the top. A card's far corner
-     sits about 1.15x the stage width apart, which is what 65vh leaves
-     room for once the heading has taken its share. */
-  width:min(760px,94vw,65vh);
+     way rather than pushing the heading off the top. 61vh is what still
+     fits on the shortest display worth pinning on, around 780px. */
+  --stage:min(700px,94vw,61vh);
+
+  position:relative;
+  width:var(--stage);
   aspect-ratio:1;
-  margin:0 auto;
+  /* The spill is real layout, not decoration: without this margin the
+     flex centring only knows about the box, and the top cards ride up
+     over the heading. */
+  margin:var(--spill) auto;
 }
 
 /* --spin is the ring's angle, written on the stage by script.js once the
@@ -2155,9 +2180,9 @@ p,li{text-wrap:pretty}
    to show, hence the scrim rather than a flat colour */
 .vs-card .vs-label{
   position:absolute;left:0;right:0;bottom:0;
-  padding:26px 10px 9px;
+  padding:30px 12px 11px;
   font-family:'Outfit',sans-serif;font-weight:800;
-  font-size:clamp(.54rem,1.5vw,.72rem);
+  font-size:clamp(.62rem,1.6vw,.84rem);
   letter-spacing:.02em;line-height:1.15;color:var(--white);
   text-transform:uppercase;text-align:center;
   background:linear-gradient(to top,rgba(11,11,10,.92),rgba(11,11,10,.55) 55%,transparent);
@@ -2169,8 +2194,8 @@ p,li{text-wrap:pretty}
    keyboard focus bring it to rest. script.js watches for both and eases
    the speed down, rather than halting on the spot. */
 
-.vs-cta{text-align:center;padding-bottom:62px}
-.vs:not(.pin-on) .vs-cta{margin-top:34px}
+/* Nothing sits below the ring: anything there scrolls past while the
+   section is pinned, which reads as the ring having come loose. */
 
 /* The ring is decoration; nobody should have to sit through it. The
    cards are also pinned to arrived, so turning the motion off cannot
