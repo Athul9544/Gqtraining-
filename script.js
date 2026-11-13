@@ -899,8 +899,36 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   const TOP_SPEED = 360 / 42;      // degrees per second — one turn in 42s
   let spin = 0;
   let speed = 0;
-  let hovering = false;
+  let focused = false;
   let onScreen = false;
+
+  /* Where the mouse is, rather than whether it has "entered" anything.
+     pointerenter only fires when the pointer itself moves, so a cursor
+     left sitting still while the section scrolls up to meet it — or
+     while the cards turn underneath it — never counted as a hover, and
+     the ring carried on turning under the cursor. Re-testing the
+     position against the ring every frame cannot miss either case.
+
+     Mouse only: a tap would otherwise leave its coordinates behind on a
+     touchscreen and stop the ring for good. */
+  let px = 0, py = 0, hasMouse = false;
+  window.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    px = e.clientX; py = e.clientY; hasMouse = true;
+    Motion.wake();
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { hasMouse = false; Motion.wake(); });
+
+  /* The ring's full reach: the orbit itself plus half a card's diagonal,
+     so the cards count as well as the hole in the middle. */
+  const overRing = () => {
+    if (!hasMouse) return false;
+    const r = stage.getBoundingClientRect();
+    const dx = px - (r.left + r.width / 2);
+    const dy = py - (r.top + r.height / 2);
+    const reach = r.width * 0.58;
+    return dx * dx + dy * dy <= reach * reach;
+  };
 
   const paint = (dt) => {
     if (!section.classList.contains('pin-on')) {
@@ -925,7 +953,7 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
 
     /* Turning only once every card is home, and only while the section is
        actually on screen — otherwise the loop would never sleep. */
-    const wantSpeed = (p >= ASSEMBLED && onScreen && !hovering) ? TOP_SPEED : 0;
+    const wantSpeed = (p >= ASSEMBLED && onScreen && !focused && !overRing()) ? TOP_SPEED : 0;
     speed = Motion.toward(speed, wantSpeed, dt, 0.55);
     if (speed > 0.004) {
       spin = (spin + speed * dt) % 360;
@@ -943,9 +971,7 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   narrow.addEventListener('change', relayout);
   still.addEventListener('change', relayout);
 
-  const rest = on => () => { hovering = on; Motion.wake(); };
-  stage.addEventListener('pointerenter', rest(true));
-  stage.addEventListener('pointerleave', rest(false));
+  const rest = on => () => { focused = on; Motion.wake(); };
   stage.addEventListener('focusin', rest(true));
   stage.addEventListener('focusout', rest(false));
 
