@@ -864,22 +864,43 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
 
   /* ---- the climb ---- */
 
+  /* The circle is whole at this point in the scroll. What is left after
+     it is the beat where the ring turns before the page moves on. */
+  const ASSEMBLED = 0.86;
+  /* Each card owns a slot of the scroll. It travels for this much of its
+     slot and rests for the remainder, so one card lands and settles
+     before the next one starts to climb — one card per scroll, rather
+     than several in the air at once. */
+  const TRAVEL = 0.72;
+
   const measure = () => {
     if (narrow.matches || still.matches) {
       section.classList.remove('pin-on');
       outer.style.height = '';
       cards.forEach(c => c.style.setProperty('--r', '1'));
+      stage.style.setProperty('--spin', '0deg');
       return;
     }
     section.classList.add('pin-on');
-    /* One screen held still, plus most of another to bring the seven in.
-       Any longer and the circle sits finished while the page refuses to
-       move on, which reads as the scroll having jammed. */
-    outer.style.height = Math.round(window.innerHeight * 1.95) + 'px';
+    /* One screen held still, plus enough again to give all seven cards a
+       scroll of their own. Seven separate arrivals need more runway than
+       seven overlapping ones did. */
+    outer.style.height = Math.round(window.innerHeight * 2.6) + 'px';
   };
 
   const shown = cards.map(() => 0);
   let primed = false;
+
+  /* The turn, once the circle is whole. Kept as an angle and a speed
+     rather than a CSS animation so it can ease in and out: the speed is
+     carried toward its target on the same damped curve the rest of the
+     site settles on, so the ring drifts up to speed and coasts back down
+     instead of switching on. */
+  const TOP_SPEED = 360 / 42;      // degrees per second — one turn in 42s
+  let spin = 0;
+  let speed = 0;
+  let hovering = false;
+  let onScreen = false;
 
   const paint = (dt) => {
     if (!section.classList.contains('pin-on')) {
@@ -890,21 +911,26 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
     const span = outer.offsetHeight - window.innerHeight;
     const p = span > 0 ? clamp(-outer.getBoundingClientRect().top / span) : 0;
 
-    /* Overlapping windows, so the cards flow in one after another rather
-       than marching: each gets its own slot, but a slot is three times
-       the gap between starts, so the next lifts off before the last has
-       landed. They finish together by about 80% of the scroll, leaving a
-       beat with the circle whole before the page moves on. */
     const n = cards.length;
-    const step = 0.8 / (n + 2);
+    const slot = ASSEMBLED / n;
 
     let busy = false;
     for (let i = 0; i < n; i++) {
-      const want = ease(clamp((p - i * step) / (step * 3)));
+      const want = ease(clamp((p - i * slot) / (slot * TRAVEL)));
       if (!primed) shown[i] = want;
       shown[i] = Motion.toward(shown[i], want, dt, 0.13);
       if (!Motion.settled(shown[i], want)) busy = true;
       cards[i].style.setProperty('--r', shown[i].toFixed(3));
+    }
+
+    /* Turning only once every card is home, and only while the section is
+       actually on screen — otherwise the loop would never sleep. */
+    const wantSpeed = (p >= ASSEMBLED && onScreen && !hovering) ? TOP_SPEED : 0;
+    speed = Motion.toward(speed, wantSpeed, dt, 0.55);
+    if (speed > 0.004) {
+      spin = (spin + speed * dt) % 360;
+      stage.style.setProperty('--spin', spin.toFixed(2) + 'deg');
+      busy = true;
     }
 
     primed = true;
@@ -916,6 +942,17 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   window.addEventListener('load', relayout);
   narrow.addEventListener('change', relayout);
   still.addEventListener('change', relayout);
+
+  const rest = on => () => { hovering = on; Motion.wake(); };
+  stage.addEventListener('pointerenter', rest(true));
+  stage.addEventListener('pointerleave', rest(false));
+  stage.addEventListener('focusin', rest(true));
+  stage.addEventListener('focusout', rest(false));
+
+  new IntersectionObserver(entries => {
+    onScreen = entries[0].isIntersecting;
+    Motion.wake();
+  }).observe(stage);
 
   measure();
   Motion.add(paint);

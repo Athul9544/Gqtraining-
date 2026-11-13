@@ -2090,7 +2090,6 @@ p,li{text-wrap:pretty}
 
 .vs-stage{
   --n:7;                      /* number of cards on the ring */
-  --dur:42s;                  /* one full turn */
   --card:32%;                 /* card width, as a share of the stage */
   /* Close enough that neighbours overlap the way the cards in the
      reference clip do, without a label vanishing under the next one. */
@@ -2107,9 +2106,13 @@ p,li{text-wrap:pretty}
   margin:0 auto;
 }
 
+/* --spin is the ring's angle, written on the stage by script.js once the
+   circle is whole. It is a plain property rather than a CSS animation so
+   that stopping and starting can be eased: an animation removed mid-turn
+   would snap the ring back to zero. */
 .vs-ring{
   position:absolute;inset:0;
-  animation:vs-spin var(--dur) linear infinite;
+  rotate:var(--spin,0deg);
 }
 
 /* Each slot spans the whole stage, so its centre is the ring's
@@ -2138,11 +2141,11 @@ p,li{text-wrap:pretty}
   background:var(--card-dark);
   box-shadow:0 14px 30px rgba(20,19,18,.22),0 2px 6px rgba(20,19,18,.14);
   opacity:var(--r,1);
+  rotate:calc(-1 * var(--spin,0deg));
   transform:
     translateY(calc((1 - var(--r,1)) * var(--rise,58vh)))
     scale(calc(.68 + .32 * var(--r,1)))
     rotate(var(--tilt,0deg));
-  animation:vs-unspin var(--dur) linear infinite;
   transition:box-shadow .35s var(--ease-soft,ease);
   cursor:pointer;
 }
@@ -2162,16 +2165,9 @@ p,li{text-wrap:pretty}
 
 .vs-card:hover{box-shadow:0 20px 42px rgba(20,19,18,.32),0 0 0 2px var(--gold)}
 
-/* A ring that never stops is hard to click and hard to read, so any
-   hover or keyboard focus anywhere on the stage freezes the whole
-   thing — ring and cards together, or they would drift apart. */
-.vs-stage:hover .vs-ring,.vs-stage:hover .vs-card,
-.vs-stage:focus-within .vs-ring,.vs-stage:focus-within .vs-card{
-  animation-play-state:paused;
-}
-
-@keyframes vs-spin{from{rotate:0deg}to{rotate:360deg}}
-@keyframes vs-unspin{from{rotate:0deg}to{rotate:-360deg}}
+/* A ring that never stops is hard to click and hard to read, so hover and
+   keyboard focus bring it to rest. script.js watches for both and eases
+   the speed down, rather than halting on the spot. */
 
 .vs-cta{text-align:center;padding-bottom:62px}
 .vs:not(.pin-on) .vs-cta{margin-top:34px}
@@ -2180,7 +2176,7 @@ p,li{text-wrap:pretty}
    cards are also pinned to arrived, so turning the motion off cannot
    leave them stranded below the fold at opacity 0. */
 @media (prefers-reduced-motion:reduce){
-  .vs-ring,.vs-card{animation:none}
+  .vs-ring,.vs-card{rotate:none}
   .vs-card{--r:1}
 }
 
@@ -2228,14 +2224,14 @@ p,li{text-wrap:pretty}
     -webkit-overflow-scrolling:touch;scrollbar-width:none;
   }
   .vs-stage::-webkit-scrollbar{display:none}
-  .vs-ring{position:static;display:contents;animation:none}
+  .vs-ring{position:static;display:contents;rotate:none}
   .vs-slot{position:static;transform:none;display:block;scroll-snap-align:center}
   /* opacity and transform both key off --r, so the row has to declare
      the cards arrived — the pin that would otherwise raise them is off
      at this width */
   .vs-card{
     --r:1;
-    width:52vw;max-width:260px;animation:none;transform:none;opacity:1;
+    width:52vw;max-width:260px;rotate:none;transform:none;opacity:1;
     box-shadow:0 10px 24px rgba(20,19,18,.2);
   }
   .vs-card .vs-label{font-size:.78rem;padding:30px 12px 11px}
