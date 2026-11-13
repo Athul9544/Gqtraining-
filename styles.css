@@ -210,6 +210,18 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 .card:hover .arrow{background:var(--gold-grad);color:#191305;border-color:transparent;transform:translateX(3px)}
 
+/* Whole-card click targets on the home page. The link inside each card is
+   stretched over the card rather than wrapping it in a second anchor, so
+   there is still exactly one link per card for keyboard and screen readers. */
+#who .person-card,#programs .program{position:relative}
+#who .person-card .arrow::after,
+#programs .program .btn::after{content:'';position:absolute;inset:0;z-index:1}
+#who .person-card{cursor:pointer}
+#programs .program{cursor:pointer}
+/* keep the focus ring on the control itself, not the whole card */
+#who .person-card .arrow:focus-visible,
+#programs .program .btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
 /* program cards */
 .icon-tile{
   display:grid;place-items:center;width:48px;height:48px;border-radius:13px;
