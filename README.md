@@ -63,7 +63,22 @@ anywhere on the site and is excluded in `robots.txt`; reach it at
   redeploy — so the live blog updates roughly a minute after you press save.
 - Uploaded images are committed to `assets/img/blog/`.
 
-**Environment variables** (Vercel → Settings → Environment Variables)
+**Running the admin on your own machine**
+
+The hosted `/admin.html` needs the environment variables below set on Vercel.
+While that is not possible, the same admin runs locally:
+
+```bash
+node dev-server.js
+```
+
+Then open <http://localhost:4321/admin.html>. It reads `ADMIN_PASSWORD` and
+`GITHUB_TOKEN` from `.env.local` and behaves exactly as the hosted version
+would — saving commits to GitHub and the public blog updates on the next
+deploy. Only the admin screen is local; visitors see the normal live site.
+
+**Environment variables** (Vercel → Settings → Environment Variables, or
+`.env.local` for the local server above)
 
 | Name | Required | What it is |
 |---|---|---|
@@ -107,8 +122,17 @@ vercel alias set <deployment-url> gqtraining.vercel.app
 
 ## Still to do
 
-- `ADMIN_PASSWORD` and `GITHUB_TOKEN` on Vercel — the blog admin does nothing
-  until both are set.
+- **The Vercel team is blocked** — "Your Team exceeded our fair use limits and
+  has been blocked." Writes to the project API are refused, so the admin's two
+  environment variables cannot be added, and `gqtraining.vercel.app` returns
+  402. Deployments from GitHub still work and `gqtraining-ruby.vercel.app`
+  serves normally. Until this is resolved, use `node dev-server.js` for the
+  admin. Resolving it is a billing/support matter in the Vercel dashboard.
+- **The GitHub token needs `Contents: Read and write`.** The current one can
+  read the repository but GitHub refuses writes with *"Resource not accessible
+  by personal access token"*, so saving fails. Fix it at GitHub → Settings →
+  Developer settings → Fine-grained tokens → this token → Repository
+  permissions. Editing the permission does not change the token value.
 - The floating WhatsApp button on `index.html`, `training.html` and `blog.html`
   still points at the placeholder `wa.me/910000000000`. It was removed from
   `contact.html`.
