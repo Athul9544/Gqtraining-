@@ -376,11 +376,20 @@
       describeStore(state);
       if (state.signedIn) return showApp();
 
+      /* No password on this deployment means signing in cannot ever succeed.
+         Hide the form rather than let someone type into a dead field. */
       if (!state.configured) {
-        showGate('Not finished setting up: ' + state.missing.join(' and ') +
-                 ' must be added to the Vercel project before this page can work.');
+        document.getElementById('setup').hidden = false;
+        document.getElementById('login-fields').hidden = true;
+        document.getElementById('setup-why').textContent =
+          'Technical reason: ' + state.missing.join(' and ') +
+          ' is not set on this deployment.';
+        showGate('');
         return;
       }
+
+      document.getElementById('setup').hidden = true;
+      document.getElementById('login-fields').hidden = false;
       showGate('');
     } catch (err) {
       showGate(err.message);
