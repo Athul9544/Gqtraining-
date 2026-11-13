@@ -268,7 +268,14 @@
       posts = result.posts;
       dirty = false;
       render();
-      say('Saved. The live blog updates in about a minute.', 'ok');
+
+      /* The local store reports back what git actually managed to do, which
+         may be less than a clean commit-and-push. */
+      if (result.git && !result.git.pushed) {
+        say('Saved. ' + result.git.note, result.git.committed ? 'busy' : 'bad');
+      } else {
+        say('Saved. The live blog updates in about a minute.', 'ok');
+      }
     } catch (err) {
       say(err.message, 'bad');
       if (err.status === 401) showGate('Your session expired. Sign in again.');
@@ -345,11 +352,28 @@
     }
   });
 
+  /* The footer line should say what saving will really do here, which is not
+     the same when the admin runs locally as when it runs on Vercel. */
+  function describeStore(state) {
+    const note = document.getElementById('store-note');
+    if (!note) return;
+
+    if (state.store === 'local') {
+      note.textContent = state.autoPush
+        ? 'Saving writes data/posts.json, commits it and pushes. The live blog updates about a minute later.'
+        : 'Saving writes data/posts.json only (GIT_AUTOPUSH=0). Commit and push it yourself to publish.';
+    } else {
+      note.textContent = 'Saving commits data/posts.json to ' + (state.repo || 'the repository') +
+        ', which triggers a redeploy. The live blog updates within about a minute.';
+    }
+  }
+
   /* ---------------------------------------------------------------- boot */
 
   (async function boot() {
     try {
       const state = await call('session', null, 'GET');
+      describeStore(state);
       if (state.signedIn) return showApp();
 
       if (!state.configured) {

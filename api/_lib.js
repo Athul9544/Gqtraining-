@@ -7,32 +7,53 @@
  * process.env.ADMIN_PASSWORD — it is never sent to the client, never written
  * into a page, and never committed (this repo is public).
  *
- * Environment variables (Vercel -> Settings -> Environment Variables):
+ * There are two ways the admin can store what it saves:
+ *
+ *   local  — write the files straight to the working copy and let git commit
+ *            and push them. Used by dev-server.js on your own machine. Needs
+ *            no GitHub token, because git is already authenticated there.
+ *   github — commit through the GitHub Contents API. Used when the admin runs
+ *            on Vercel, where there is no working copy and no git.
+ *
+ * Environment variables (Vercel -> Settings -> Environment Variables, or
+ * .env.local when running dev-server.js):
  *   ADMIN_PASSWORD         required. The admin login password.
- *   GITHUB_TOKEN           required to save. Fine-grained PAT with
- *                          "Contents: Read and write" on this repository.
+ *   BLOG_STORE             "local" or "github". dev-server.js sets "local";
+ *                          anywhere else it defaults to "github".
+ *   GITHUB_TOKEN           required by the github store only. Fine-grained PAT
+ *                          with "Contents: Read and write" on this repository.
  *   GITHUB_REPO            optional, defaults to the repo below.
  *   GITHUB_BRANCH          optional, defaults to "main".
+ *   GIT_AUTOPUSH           local store only. "0" writes the files but leaves
+ *                          committing to you. Anything else commits and pushes.
  *   ADMIN_SESSION_SECRET   optional. Signs session cookies. Falls back to
  *                          ADMIN_PASSWORD, which means changing the password
  *                          also logs everyone out — usually what you want.
  */
 
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+const { execFile } = require('child_process');
 
 const COOKIE = 'gq_admin';
 const TTL_SECONDS = 8 * 60 * 60;
 const POSTS_PATH = 'data/posts.json';
+const PROJECT_ROOT = path.resolve(__dirname, '..');
 
 /* ---------------------------------------------------------- configuration */
 
 const repoSlug = () => process.env.GITHUB_REPO || 'Athul9544/Gqtraining-';
 const branch = () => process.env.GITHUB_BRANCH || 'main';
 
+const store = () => (process.env.BLOG_STORE === 'local' ? 'local' : 'github');
+const isLocalStore = () => store() === 'local';
+const autoPush = () => process.env.GIT_AUTOPUSH !== '0';
+
 function missingConfig() {
   const missing = [];
   if (!process.env.ADMIN_PASSWORD) missing.push('ADMIN_PASSWORD');
-  if (!process.env.GITHUB_TOKEN) missing.push('GITHUB_TOKEN');
+  if (!isLocalStore() && !process.env.GITHUB_TOKEN) missing.push('GITHUB_TOKEN');
   return missing;
 }
 
@@ -144,6 +165,64 @@ function noteFailure(req) {
 
 const clearFailures = (req) => attempts.delete(throttleKey(req));
 
+/* ------------------------------------------------------- the local store  */
+
+/* Keeps every write inside the project, whatever the caller passes. */
+function localPath(relative) {
+  const full = path.resolve(PROJECT_ROOT, relative);
+  if (full !== PROJECT_ROOT && !full.startsWith(PROJECT_ROOT + path.sep)) {
+    throw new Error('refusing to write outside the project: ' + relative);
+  }
+  return full;
+}
+
+function git(args) {
+  return new Promise((resolve) => {
+    execFile('git', args, { cwd: PROJECT_ROOT, timeout: 90000 }, (err, stdout, stderr) => {
+      resolve({
+        ok: !err,
+        out: String(stdout || '').trim(),
+        err: String((err && err.message) || stderr || '').trim()
+      });
+    });
+  });
+}
+
+/* Commits only the paths given — never the whole working tree, which may
+   hold edits that have nothing to do with the blog. */
+async function commitAndPush(wanted, message) {
+  if (!autoPush()) {
+    return { committed: false, pushed: false, note: 'GIT_AUTOPUSH=0 — files written, not committed.' };
+  }
+
+  /* git add fails outright on a path that does not exist, and the uploads
+     folder only appears once someone has uploaded something. */
+  const paths = wanted.filter(p => fs.existsSync(localPath(p)));
+  if (!paths.length) return { committed: false, pushed: false, note: 'Nothing on disk to publish.' };
+
+  const add = await git(['add', '--'].concat(paths));
+  if (!add.ok) return { committed: false, pushed: false, note: 'git add failed: ' + add.err };
+
+  const staged = await git(['diff', '--cached', '--name-only', '--'].concat(paths));
+  if (!staged.out) {
+    return { committed: false, pushed: false, note: 'Nothing changed, so nothing to publish.' };
+  }
+
+  const commit = await git(['commit', '-m', message, '--'].concat(paths));
+  if (!commit.ok) return { committed: false, pushed: false, note: 'git commit failed: ' + commit.err };
+
+  const push = await git(['push']);
+  if (!push.ok) {
+    return {
+      committed: true,
+      pushed: false,
+      note: 'Committed locally, but the push failed: ' + push.err + ' — run "git push" yourself.'
+    };
+  }
+
+  return { committed: true, pushed: true, note: 'Committed and pushed. The live blog follows the deploy.' };
+}
+
 /* ----------------------------------------------------------------- github */
 
 async function githubRequest(path, init) {
@@ -171,27 +250,45 @@ async function githubRequest(path, init) {
 const contentsUrl = (path) =>
   '/repos/' + repoSlug() + '/contents/' + path.split('/').map(encodeURIComponent).join('/');
 
-/* Returns { json, sha } — sha is null when the file does not exist yet. */
+/* A byte-order mark is invisible in an editor but makes JSON.parse throw, so
+   strip it rather than failing on a file someone saved from Windows. */
+function parsePosts(text, where) {
+  try {
+    return JSON.parse(text.replace(/^﻿/, ''));
+  } catch (parseError) {
+    const err = new Error(POSTS_PATH + ' in ' + where + ' is not valid JSON: ' + parseError.message);
+    err.status = 500;
+    throw err;
+  }
+}
+
+/* Returns { json, sha } — sha is null for the local store and for a file that
+   does not exist yet. */
 async function readPosts() {
+  if (isLocalStore()) {
+    const file = localPath(POSTS_PATH);
+    if (!fs.existsSync(file)) return { json: { posts: [] }, sha: null };
+    return { json: parsePosts(fs.readFileSync(file, 'utf8'), 'the working copy'), sha: null };
+  }
+
   try {
     const file = await githubRequest(contentsUrl(POSTS_PATH) + '?ref=' + encodeURIComponent(branch()));
-    /* A byte-order mark is invisible in an editor but makes JSON.parse throw,
-       so strip it rather than failing on a file someone saved from Windows. */
-    const text = Buffer.from(file.content || '', 'base64').toString('utf8').replace(/^﻿/, '');
-    try {
-      return { json: JSON.parse(text), sha: file.sha };
-    } catch (parseError) {
-      const err = new Error(POSTS_PATH + ' in the repository is not valid JSON: ' + parseError.message);
-      err.status = 500;
-      throw err;
-    }
+    const text = Buffer.from(file.content || '', 'base64').toString('utf8');
+    return { json: parsePosts(text, 'the repository'), sha: file.sha };
   } catch (err) {
     if (err.status === 404) return { json: { posts: [] }, sha: null };
     throw err;
   }
 }
 
-async function writeFile(path, buffer, message, sha) {
+async function writeFile(relative, buffer, message, sha) {
+  if (isLocalStore()) {
+    const file = localPath(relative);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, buffer);
+    return { local: true, path: relative };
+  }
+
   const body = {
     message,
     content: buffer.toString('base64'),
@@ -199,17 +296,19 @@ async function writeFile(path, buffer, message, sha) {
   };
   if (sha) body.sha = sha;
 
-  return githubRequest(contentsUrl(path), {
+  return githubRequest(contentsUrl(relative), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
 }
 
-/* Needed before overwriting an image that may or may not already exist. */
-async function existingSha(path) {
+/* Needed before overwriting an image that may or may not already exist.
+   The local store overwrites in place, so there is no sha to fetch. */
+async function existingSha(relative) {
+  if (isLocalStore()) return null;
   try {
-    const file = await githubRequest(contentsUrl(path) + '?ref=' + encodeURIComponent(branch()));
+    const file = await githubRequest(contentsUrl(relative) + '?ref=' + encodeURIComponent(branch()));
     return file.sha;
   } catch (err) {
     if (err.status === 404) return null;
@@ -276,6 +375,10 @@ module.exports = {
   POSTS_PATH,
   repoSlug,
   branch,
+  store,
+  isLocalStore,
+  autoPush,
+  commitAndPush,
   missingConfig,
   passwordMatches,
   startSession,

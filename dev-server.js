@@ -2,17 +2,18 @@
  *
  *   node dev-server.js        then open http://localhost:4321/admin.html
  *
- * It serves the site exactly as Vercel does and runs the functions in api/
- * in the same way, reading ADMIN_PASSWORD and GITHUB_TOKEN from .env.local
- * (which is gitignored and never deployed).
+ * It serves the site exactly as Vercel does and runs the same functions from
+ * api/, reading ADMIN_PASSWORD from .env.local (gitignored, never deployed).
  *
- * This exists because the hosted /admin.html needs those two values set as
- * environment variables on Vercel, and that project is currently blocked. The
- * admin still works from here: saving commits to GitHub exactly as it would
- * in production, and the public blog picks the change up on the next deploy.
+ * Saving writes straight to the working copy and then lets git commit and
+ * push it, so no GitHub token is involved — your machine is already
+ * authenticated with GitHub. The push triggers the usual Vercel deploy and
+ * the live blog follows a minute later.
  *
- * Nothing about this file is required in production — it is a convenience for
- * running the same code on your own machine.
+ * Set GIT_AUTOPUSH=0 to have it write the files and leave committing to you.
+ *
+ * Nothing here is required in production; it is a way to run the same code on
+ * your own machine.
  */
 
 const http = require('http');
@@ -43,6 +44,10 @@ function loadEnv() {
   });
 }
 loadEnv();
+
+/* Running here means there is a working copy and a git remote, so the admin
+   saves to disk and pushes rather than going through the GitHub API. */
+if (!process.env.BLOG_STORE) process.env.BLOG_STORE = 'local';
 
 /* ------------------------------------------------------------- the routes */
 
@@ -115,14 +120,15 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  const missing = ['ADMIN_PASSWORD', 'GITHUB_TOKEN'].filter(key => !process.env[key]);
   console.log('Golden Qube running on http://localhost:' + PORT);
   console.log('Blog admin:            http://localhost:' + PORT + '/admin.html');
-  if (missing.length) {
-    console.log('\n  ! ' + missing.join(' and ') + ' missing from .env.local — the admin will not sign in.');
+
+  if (!process.env.ADMIN_PASSWORD) {
+    console.log('\n  ! ADMIN_PASSWORD is missing from .env.local — the admin will not sign in.');
+  } else if (process.env.GIT_AUTOPUSH === '0') {
+    console.log('\n  Saving writes the files only (GIT_AUTOPUSH=0). Commit and push them yourself.');
   } else {
-    console.log('\n  Saving in the admin commits to ' +
-      (process.env.GITHUB_REPO || 'Athul9544/Gqtraining-') + ' and the live site follows.');
+    console.log('\n  Saving commits and pushes to git, and the live site follows the deploy.');
   }
   console.log('\nPress Ctrl+C to stop.');
 });

@@ -60,6 +60,8 @@ function session(req, res) {
     signedIn: lib.isSignedIn(req),
     configured: missing.length === 0,
     missing,
+    store: lib.store(),
+    autoPush: lib.isLocalStore() && lib.autoPush(),
     repo: lib.repoSlug(),
     branch: lib.branch()
   });
@@ -124,7 +126,18 @@ async function savePosts(req, res, body) {
     current.sha
   );
 
-  return res.status(200).json({ ok: true, posts, count: posts.length });
+  /* The github store committed as it wrote. The local store wrote to the
+     working copy, so git has to carry it the rest of the way — including any
+     images uploaded since the last save. */
+  let git = null;
+  if (lib.isLocalStore()) {
+    git = await lib.commitAndPush(
+      [lib.POSTS_PATH, 'assets/img/blog'],
+      'Blog: update posts from the admin page'
+    );
+  }
+
+  return res.status(200).json({ ok: true, posts, count: posts.length, git });
 }
 
 async function uploadImage(req, res, body) {
