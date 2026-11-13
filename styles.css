@@ -2050,3 +2050,120 @@ p,li{text-wrap:pretty}
   .post-body{font-size:.98rem}
   .post-body h2{font-size:1.38rem}
 }
+
+/* ================================================================
+   VIDEO SHOWCASE — the orbiting reel ring (business.html)
+   ================================================================
+   The cards sit on a ring that turns clockwise for ever. Each card
+   then turns backwards at exactly the same speed, so it orbits
+   without ever tipping over — the labels stay readable the whole
+   way round.
+
+   Two separate rotations are needed on the card at once: the
+   animated one that cancels the ring, and the small fixed tilt that
+   gives the stack its hand-placed look. They are kept apart by
+   using the standalone `rotate` property for the animation and
+   leaving `transform` free for the tilt — otherwise whichever came
+   second would simply overwrite the other.
+
+   Geometry is driven by --n (how many cards) so adding or removing
+   a reel re-spaces the ring on its own. */
+.vs{background:var(--off);padding:62px 0;overflow:hidden}
+.vs-head{text-align:center;max-width:620px;margin:0 auto 10px}
+.vs-head h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:12px}
+.vs-sub{color:var(--muted);line-height:1.6}
+
+.vs-stage{
+  --n:7;                      /* number of cards on the ring */
+  --dur:42s;                  /* one full turn */
+  --card:25%;                 /* card width, as a share of the stage */
+  /* Just wide enough that neighbours touch rather than bury each
+     other — any tighter and a card's label disappears under the
+     next one. */
+  --radius:30.5%;             /* distance from the centre */
+  position:relative;
+  width:min(620px,92vw);
+  aspect-ratio:1;
+  margin:0 auto;
+}
+
+.vs-ring{
+  position:absolute;inset:0;
+  animation:vs-spin var(--dur) linear infinite;
+}
+
+/* Each slot spans the whole stage, so its centre is the ring's
+   centre; the transform then swings the card out to its place.
+   The trailing rotate(calc(-1 * var(--a))) undoes the swing's own
+   turn, which is what keeps the card square to the slot. */
+.vs-slot{
+  --a:calc(360deg / var(--n) * var(--i));
+  position:absolute;inset:0;
+  transform:rotate(var(--a)) translate(var(--radius)) rotate(calc(-1 * var(--a)));
+  display:grid;place-items:center;
+}
+
+.vs-card{
+  position:relative;display:block;
+  width:var(--card);aspect-ratio:4/5;
+  border-radius:14px;overflow:hidden;
+  background:var(--card-dark);
+  box-shadow:0 14px 30px rgba(20,19,18,.22),0 2px 6px rgba(20,19,18,.14);
+  transform:rotate(var(--tilt,0deg));
+  animation:vs-unspin var(--dur) linear infinite;
+  transition:box-shadow .35s var(--ease-soft,ease);
+}
+.vs-card img{width:100%;height:100%;object-fit:cover}
+
+/* the label needs to sit on top of whatever the thumbnail happens
+   to show, hence the scrim rather than a flat colour */
+.vs-card .vs-label{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:26px 10px 9px;
+  font-family:'Outfit',sans-serif;font-weight:800;
+  font-size:clamp(.54rem,1.5vw,.72rem);
+  letter-spacing:.02em;line-height:1.15;color:var(--white);
+  text-transform:uppercase;text-align:center;
+  background:linear-gradient(to top,rgba(11,11,10,.92),rgba(11,11,10,.55) 55%,transparent);
+}
+
+.vs-card:hover{box-shadow:0 20px 42px rgba(20,19,18,.32),0 0 0 2px var(--gold)}
+
+/* A ring that never stops is hard to click and hard to read, so any
+   hover or keyboard focus anywhere on the stage freezes the whole
+   thing — ring and cards together, or they would drift apart. */
+.vs-stage:hover .vs-ring,.vs-stage:hover .vs-card,
+.vs-stage:focus-within .vs-ring,.vs-stage:focus-within .vs-card{
+  animation-play-state:paused;
+}
+
+@keyframes vs-spin{from{rotate:0deg}to{rotate:360deg}}
+@keyframes vs-unspin{from{rotate:0deg}to{rotate:-360deg}}
+
+.vs-cta{text-align:center;margin-top:34px}
+
+/* the ring is decoration; nobody should have to sit through it */
+@media (prefers-reduced-motion:reduce){
+  .vs-ring,.vs-card{animation:none}
+}
+
+/* On a phone the ring would shrink the cards past reading size, so
+   the same cards become a swipeable row instead. */
+@media (max-width:640px){
+  .vs{padding:48px 0}
+  .vs-stage{
+    width:auto;aspect-ratio:auto;
+    margin:0 -28px;padding:4px 28px 18px;
+    display:flex;gap:14px;overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .vs-stage::-webkit-scrollbar{display:none}
+  .vs-ring{position:static;display:contents;animation:none}
+  .vs-slot{position:static;transform:none;display:block;scroll-snap-align:center}
+  .vs-card{
+    width:44vw;max-width:210px;animation:none;transform:none;
+    box-shadow:0 10px 24px rgba(20,19,18,.2);
+  }
+  .vs-card .vs-label{font-size:.72rem;padding:28px 10px 10px}
+}
