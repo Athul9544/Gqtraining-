@@ -58,24 +58,32 @@ anywhere on the site and is excluded in `robots.txt`; reach it at
 - `data/posts.json` is the only source of truth for the blog.
 - `blog-render.js` reads that file on `blog.html` and `post.html`. It runs in
   the browser with no server involved.
-- `api/admin.js` handles login and writes. Saving commits a new
-  `data/posts.json` through the GitHub Contents API, which triggers a Vercel
-  redeploy — so the live blog updates roughly a minute after you press save.
-- Uploaded images are committed to `assets/img/blog/`.
+- `api/admin.js` handles login and writes. Either way the result is a commit
+  that changes `data/posts.json`, which triggers a Vercel deploy — so the live
+  blog updates roughly a minute after you press save.
+- Uploaded images go to `assets/img/blog/` in the same commit.
 
-**Running the admin on your own machine**
+There are two ways it can store a save, chosen by `BLOG_STORE`:
 
-The hosted `/admin.html` needs the environment variables below set on Vercel.
-While that is not possible, the same admin runs locally:
+| Store | Used by | How it publishes |
+|---|---|---|
+| `local` | `dev-server.js` on your machine | Writes the files to the working copy, then `git add`, `commit`, `push`. Needs **no GitHub token** — git is already authenticated. |
+| `github` | the admin hosted on Vercel | Commits through the GitHub Contents API, because there is no working copy there. |
+
+**Running the admin on your own machine (the way it works today)**
 
 ```bash
 node dev-server.js
 ```
 
-Then open <http://localhost:4321/admin.html>. It reads `ADMIN_PASSWORD` and
-`GITHUB_TOKEN` from `.env.local` and behaves exactly as the hosted version
-would — saving commits to GitHub and the public blog updates on the next
-deploy. Only the admin screen is local; visitors see the normal live site.
+Then open <http://localhost:4321/admin.html> and sign in. Saving writes
+`data/posts.json`, commits and pushes it, and the public blog follows the
+deploy about a minute later. Only the admin screen is local; visitors see the
+normal live site.
+
+The only value it needs is `ADMIN_PASSWORD` in `.env.local`, which is already
+there. Set `GIT_AUTOPUSH=0` if you would rather it wrote the files and left
+committing to you.
 
 **Environment variables** (Vercel → Settings → Environment Variables, or
 `.env.local` for the local server above)
@@ -83,7 +91,9 @@ deploy. Only the admin screen is local; visitors see the normal live site.
 | Name | Required | What it is |
 |---|---|---|
 | `ADMIN_PASSWORD` | yes | The login password |
-| `GITHUB_TOKEN` | yes | Fine-grained PAT, **Contents: Read and write** on this repo |
+| `BLOG_STORE` | no | `local` or `github`. `dev-server.js` sets `local`; elsewhere it defaults to `github` |
+| `GIT_AUTOPUSH` | no | `local` store only. `0` writes the files without committing |
+| `GITHUB_TOKEN` | github store only | Fine-grained PAT, **Contents: Read and write** on this repo |
 | `GITHUB_REPO` | no | Defaults to `Athul9544/Gqtraining-` |
 | `GITHUB_BRANCH` | no | Defaults to `main` |
 | `ADMIN_SESSION_SECRET` | no | Signs session cookies; falls back to `ADMIN_PASSWORD` |
@@ -123,16 +133,20 @@ vercel alias set <deployment-url> gqtraining.vercel.app
 ## Still to do
 
 - **The Vercel team is blocked** — "Your Team exceeded our fair use limits and
-  has been blocked." Writes to the project API are refused, so the admin's two
-  environment variables cannot be added, and `gqtraining.vercel.app` returns
+  has been blocked." Writes to the project API are refused, so no environment
+  variables can be added to the project, and `gqtraining.vercel.app` returns
   402. Deployments from GitHub still work and `gqtraining-ruby.vercel.app`
-  serves normally. Until this is resolved, use `node dev-server.js` for the
-  admin. Resolving it is a billing/support matter in the Vercel dashboard.
-- **The GitHub token needs `Contents: Read and write`.** The current one can
-  read the repository but GitHub refuses writes with *"Resource not accessible
-  by personal access token"*, so saving fails. Fix it at GitHub → Settings →
-  Developer settings → Fine-grained tokens → this token → Repository
-  permissions. Editing the permission does not change the token value.
+  serves normally. This is a billing/support matter in the Vercel dashboard.
+
+  The blog admin does not depend on it — `node dev-server.js` publishes
+  through git. Hosting the admin at `/admin.html` does, as do the Google
+  reviews below.
+- **The GitHub token can read but not write.** GitHub refuses with *"Resource
+  not accessible by personal access token"*. It is only needed by the `github`
+  store, so nothing is blocked by it today. To use it later, grant
+  **Contents: Read and write** at GitHub → Settings → Developer settings →
+  Fine-grained tokens → that token → Repository permissions. Editing the
+  permission does not change the token value.
 - The floating WhatsApp button on `index.html`, `training.html` and `blog.html`
   still points at the placeholder `wa.me/910000000000`. It was removed from
   `contact.html`.
