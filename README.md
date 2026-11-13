@@ -10,10 +10,13 @@ Static HTML, CSS and vanilla JavaScript — no framework and no build step.
 | `index.html` | Home |
 | `training.html` | Training course details |
 | `blog.html` | Blog |
+| `post.html` | A single article, chosen by `?p=<slug>` |
 | `contact.html` | Contact |
+| `admin.html` | Password-protected blog manager (not linked from the site) |
 
-`styles.css` and `script.js` are shared by all four. Training-page styles are
-prefixed `tp-` so they cannot affect the other pages.
+`styles.css` and `script.js` are shared by the public pages. Training-page
+styles are prefixed `tp-` so they cannot affect the other pages. The admin page
+is deliberately separate — it loads only `admin.css` and `admin.js`.
 
 ## Running it
 
@@ -44,6 +47,57 @@ during an outage, so the section never empties out.
 
 Note: the Places API returns at most 5 reviews and Google chooses which.
 
+## Blog admin
+
+`admin.html` manages the articles on the blog page. It is not linked from
+anywhere on the site and is excluded in `robots.txt`; reach it at
+`/admin.html`.
+
+**How the pieces fit together**
+
+- `data/posts.json` is the only source of truth for the blog.
+- `blog-render.js` reads that file on `blog.html` and `post.html`. It runs in
+  the browser with no server involved.
+- `api/admin.js` handles login and writes. Saving commits a new
+  `data/posts.json` through the GitHub Contents API, which triggers a Vercel
+  redeploy — so the live blog updates roughly a minute after you press save.
+- Uploaded images are committed to `assets/img/blog/`.
+
+**Environment variables** (Vercel → Settings → Environment Variables)
+
+| Name | Required | What it is |
+|---|---|---|
+| `ADMIN_PASSWORD` | yes | The login password |
+| `GITHUB_TOKEN` | yes | Fine-grained PAT, **Contents: Read and write** on this repo |
+| `GITHUB_REPO` | no | Defaults to `Athul9544/Gqtraining-` |
+| `GITHUB_BRANCH` | no | Defaults to `main` |
+| `ADMIN_SESSION_SECRET` | no | Signs session cookies; falls back to `ADMIN_PASSWORD` |
+
+Redeploy after adding them — environment variables are only picked up by a new
+deployment. Until both required values are set, the login screen says which one
+is missing.
+
+**How the password is handled.** It exists only as a Vercel environment
+variable. The browser posts an attempt to `/api/admin`, the server compares it
+with a constant-time hash check and replies with an HttpOnly, Secure,
+SameSite=Strict cookie signed with HMAC-SHA256. No page, script or committed
+file contains the password, and the session cookie cannot be read by
+JavaScript. Repeated failures from one address are throttled.
+
+Changing the password is a one-field edit in Vercel followed by a redeploy.
+That also invalidates every existing session, because the cookie signature is
+derived from it.
+
+**What a post can contain.** Title, tag, date, a short description for the
+card, an image, alt text, article text, and an optional external link. Leave
+the article text empty and set an external link to make "Read More" point
+somewhere else; leave both empty and the card simply has no link. Untick
+*Published* to keep a post off the blog as a draft.
+
+Article text takes a small, deliberately limited subset of Markdown — `##`
+headings, `-` bullets, `**bold**`, `*italic*` and `[text](url)`. Everything
+else is rendered as plain text, so a post can never inject HTML into the page.
+
 ## Deploying
 
 ```bash
@@ -53,8 +107,13 @@ vercel alias set <deployment-url> gqtraining.vercel.app
 
 ## Still to do
 
-- Real phone and WhatsApp number — currently `+910000000000`
-- Office address — currently "Address to be added"
+- `ADMIN_PASSWORD` and `GITHUB_TOKEN` on Vercel — the blog admin does nothing
+  until both are set.
+- The floating WhatsApp button on `index.html`, `training.html` and `blog.html`
+  still points at the placeholder `wa.me/910000000000`. It was removed from
+  `contact.html`.
+- `aiqube.team@gmail.com` is still the Enrol Now address on `index.html` and
+  `blog.html`; the contact page now uses `Goldenqubetraining@gmail.com`.
 - A form endpoint. The contact form and the footer subscribe both validate
   input and show a confirmation, but nothing is actually sent anywhere.
 - Learner Stories testimonials are placeholder copy with stock photography.

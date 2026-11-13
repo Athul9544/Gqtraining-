@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog Admin — Golden Qube</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section class="gate" id="gate" hidden>
+  <form class="gate-card" id="login-form" autocomplete="on">
+    <img src="assets/logo.png" alt="Golden Qube" class="gate-logo">
+    <h1>Blog Admin</h1>
+    <p class="gate-sub">Sign in to manage the articles on the blog page.</p>
+
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+    <button type="submit" class="btn btn-gold" id="login-btn">Sign in</button>
+    <p class="note" id="login-msg" role="status"></p>
+    <a class="gate-back" href="index.html">← Back to the site</a>
+  </form>
+</section>
+
+<!-- ============ MANAGER ============ -->
+<div class="app" id="app" hidden>
+
+  <header class="bar">
+    <div class="bar-in">
+      <div class="bar-brand">
+        <img src="assets/logo.png" alt="">
+        <span>Blog Admin</span>
+      </div>
+      <div class="bar-actions">
+        <a class="btn btn-quiet" href="blog.html" target="_blank" rel="noopener">View blog ↗</a>
+        <button class="btn btn-gold" id="save-btn" type="button">Save &amp; publish</button>
+        <button class="btn btn-quiet" id="logout-btn" type="button">Sign out</button>
+      </div>
+    </div>
+    <p class="bar-status" id="status" role="status"></p>
+  </header>
+
+  <main class="wrap">
+    <div class="intro">
+      <div>
+        <h2>Articles</h2>
+        <p class="note" id="count">—</p>
+      </div>
+      <button class="btn btn-outline" id="add-btn" type="button">+ New article</button>
+    </div>
+
+    <div id="list" class="list"></div>
+
+    <p class="note foot-note">
+      Saving commits <code>data/posts.json</code> to the repository, which triggers a
+      redeploy. The live blog updates within about a minute.
+    </p>
+  </main>
+</div>
+
+<!-- ============ ROW TEMPLATE ============ -->
+<template id="row-template">
+  <article class="row">
+    <div class="row-head">
+      <button class="chev" type="button" data-act="toggle" aria-expanded="false" aria-label="Expand">▸</button>
+      <div class="row-main" data-act="toggle">
+        <strong class="row-title">Untitled post</strong>
+        <span class="row-sub"></span>
+      </div>
+      <span class="pill" data-role="state">Published</span>
+      <div class="row-tools">
+        <button class="icon" type="button" data-act="up" aria-label="Move up">↑</button>
+        <button class="icon" type="button" data-act="down" aria-label="Move down">↓</button>
+        <button class="icon danger" type="button" data-act="delete" aria-label="Delete">✕</button>
+      </div>
+    </div>
+
+    <div class="row-body" hidden>
+      <div class="field">
+        <label>Title</label>
+        <input type="text" data-field="title" maxlength="160" placeholder="How Marketers Actually Use AI Every Day">
+      </div>
+
+      <div class="field-two">
+        <div class="field">
+          <label>Tag</label>
+          <input type="text" data-field="tag" maxlength="40" placeholder="AI Marketing">
+        </div>
+        <div class="field">
+          <label>Date <span class="hint">optional</span></label>
+          <input type="date" data-field="date">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Short description <span class="hint">shown on the card</span></label>
+        <textarea data-field="excerpt" rows="2" maxlength="400"
+                  placeholder="One or two lines that make someone want to read it."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Image</label>
+        <div class="img-row">
+          <input type="text" data-field="image" placeholder="assets/img/example.jpg">
+          <label class="btn btn-outline file">
+            Upload<input type="file" accept="image/*" data-act="upload" hidden>
+          </label>
+        </div>
+        <div class="thumb" data-role="thumb" hidden><img alt=""></div>
+      </div>
+
+      <div class="field">
+        <label>Image alt text <span class="hint">describes the picture for screen readers</span></label>
+        <input type="text" data-field="imageAlt" maxlength="160" placeholder="Leave empty if the image is decorative">
+      </div>
+
+      <div class="field">
+        <label>Article text <span class="hint">leave empty to use the external link below instead</span></label>
+        <textarea data-field="body" rows="12" placeholder="Write the article here.
+
+Blank lines start a new paragraph.
+## A heading
+- a bullet
+**bold**, *italic* and [a link](https://example.com) all work."></textarea>
+      </div>
+
+      <div class="field">
+        <label>External link <span class="hint">optional — if set, Read More goes here instead of an article page</span></label>
+        <input type="text" data-field="link" placeholder="https://…">
+      </div>
+
+      <label class="check">
+        <input type="checkbox" data-field="published" checked>
+        <span>Published <em>— untick to keep it off the blog as a draft</em></span>
+      </label>
+    </div>
+  </article>
+</template>
+
+<script src="admin.js"></script>
+</body>
+</html>

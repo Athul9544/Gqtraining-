@@ -1,0 +1,44 @@
+{
+  "updatedAt": "2026-11-13T00:00:00.000Z",
+  "posts": [
+    {
+      "id": "how-marketers-actually-use-ai-every-day",
+      "slug": "how-marketers-actually-use-ai-every-day",
+      "title": "How Marketers Actually Use AI Every Day",
+      "tag": "AI Marketing",
+      "excerpt": "From research and strategy to content and analysis — where AI genuinely saves time.",
+      "image": "assets/img/ai-android.webp",
+      "imageAlt": "",
+      "link": "",
+      "body": "",
+      "date": "",
+      "published": true
+    },
+    {
+      "id": "reading-campaign-performance-without-guesswork",
+      "slug": "reading-campaign-performance-without-guesswork",
+      "title": "Reading Campaign Performance Without Guesswork",
+      "tag": "Advertising",
+      "excerpt": "The handful of numbers that tell you whether a Meta or Google campaign is working.",
+      "image": "assets/img/cta-team.jpg",
+      "imageAlt": "",
+      "link": "",
+      "body": "",
+      "date": "",
+      "published": true
+    },
+    {
+      "id": "building-a-lead-system-not-just-running-ads",
+      "slug": "building-a-lead-system-not-just-running-ads",
+      "title": "Building a Lead System, Not Just Running Ads",
+      "tag": "Lead Generation",
+      "excerpt": "How to move people from awareness to enquiry to conversion, step by step.",
+      "image": "assets/img/professional.jpg",
+      "imageAlt": "",
+      "link": "",
+      "body": "",
+      "date": "",
+      "published": true
+    }
+  ]
+}
