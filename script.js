@@ -254,6 +254,41 @@ document.querySelectorAll('[data-contact]').forEach(pop => {
   );
 });
 
+/* Email links that always land somewhere.
+ *
+ * A bare mailto: only works when the machine has a mail app registered.
+ * On a typical Windows PC or a shared computer nothing happens at all, so
+ * the visitor thinks the link is broken.
+ *
+ * These links keep mailto: in the href — that is what a phone, a Mac, or
+ * anyone with Outlook should use, and it is the no-JS fallback — but on a
+ * desktop browser we send the click to Gmail's compose window instead, with
+ * the address and subject already filled in.
+ */
+document.querySelectorAll('a[data-mail]').forEach(link => {
+  const address = link.dataset.mail;
+  if (!address) return;
+
+  /* Phones and tablets hand mailto: to the mail app that is always there,
+     so leave those alone — webmail would be the worse experience. */
+  const handheld = matchMedia('(hover: none) and (pointer: coarse)').matches;
+  if (handheld) return;
+
+  const compose = 'https://mail.google.com/mail/?view=cm&fs=1&to=' +
+    encodeURIComponent(address) +
+    (link.dataset.subject ? '&su=' + encodeURIComponent(link.dataset.subject) : '');
+
+  link.addEventListener('click', event => {
+    /* let ctrl/cmd-click, middle-click and the context menu behave normally */
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
+
+    event.preventDefault();
+    const tab = window.open(compose, '_blank', 'noopener');
+    /* if a popup blocker stopped it, fall back to the mailto: in the href */
+    if (!tab) window.location.href = link.href;
+  });
+});
+
 /* Contact page: interest chips + enquiry form */
 const chipWrap = document.getElementById('chips');
 if (chipWrap) {
