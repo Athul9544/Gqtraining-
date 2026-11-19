@@ -1416,6 +1416,13 @@ h1,h2,h3,h4{font-family:var(--font);line-height:1.1;font-weight:700;letter-spaci
   aspect-ratio:1672/941;object-fit:cover;object-position:50% 50%;
   box-shadow:0 26px 60px rgba(20,19,18,.16);
 }
+/* The Business Owners hero photo is portrait (1122x1402 = 4:5 exactly), so it
+   gets its own slot rather than being squeezed into the landscape one above.
+   height:auto matters: the width/height attributes act as a presentational
+   height and aspect-ratio is only consulted when height is auto. */
+.tp-hero-art.is-portrait img{
+  aspect-ratio:4/5;height:auto;max-width:440px;
+}
 
 /* ---------- why choose ---------- */
 .tp-why h2{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.12}
