@@ -1410,6 +1410,29 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    its top edge. Pure CSS sticky — no script, so nothing to go wrong and it
    runs backwards on the way up for free. */
 /* heading first, then the cards stack beneath it at full screen size */
+/* The section's wordmark, set into the background behind the heading.
+   Same idiom as the contact page watermark: a gold gradient clipped to
+   the letters and faded out downward, so it reads as a tint rather than
+   a second heading competing with the real one. It takes no clicks and
+   cannot be selected, and the sticky cards below scroll over the top of
+   it because .band .shell already sits on z-index 1. */
+.tp-why-mark{
+  position:absolute;z-index:0;
+  left:-.05em;top:30px;
+  font-family:'Outfit',sans-serif;font-weight:900;text-transform:uppercase;
+  font-size:min(13.5vw,11.5rem);line-height:1;letter-spacing:-.035em;
+  white-space:nowrap;
+  background:linear-gradient(180deg,rgba(201,162,39,.30),rgba(201,162,39,.05));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  user-select:none;pointer-events:none;
+}
+/* Sized to fit the whole word on one line at phone widths. Any larger
+   and the second half runs off the right edge, which reads as a
+   mistake rather than as a backdrop. */
+@media (max-width:720px){
+  .tp-why-mark{font-size:12vw;top:22px}
+}
+
 .tp-why-grid{display:block}
 .tp-why-intro{max-width:760px;margin-top:64px;margin-bottom:36px}
 .tp-why-intro h2{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.12}
