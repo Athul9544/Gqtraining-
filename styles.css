@@ -1025,7 +1025,10 @@ h1,h2,h3,h4{font-family:var(--font);line-height:1.1;font-weight:700;letter-spaci
   transform:rotate(45deg);
 }
 .cf-input.select:focus-within::after{border-color:var(--gold-deep)}
-.cf-submit{width:100%;justify-content:center;padding:16px 20px;margin-top:2px}
+/* display:flex rather than the .btn default inline-flex, so the auto margins
+   centre it under the full-width fields. */
+.cf-submit{display:flex;width:fit-content;min-width:210px;justify-content:center;
+  padding:15px 34px;margin:6px auto 0}
 .cf-msg{font-size:.86rem;color:var(--gold-deep);min-height:18px;text-align:center}
 
 /* floating WhatsApp button */
