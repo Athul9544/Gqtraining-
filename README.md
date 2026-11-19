@@ -151,7 +151,7 @@ vercel alias set <deployment-url> gqtraining.vercel.app
   still points at the placeholder `wa.me/910000000000`. It was removed from
   `contact.html`.
 - `aiqube.team@gmail.com` is still the Enrol Now address on `index.html` and
-  `blog.html`; the contact page now uses `Goldenqubetraining@gmail.com`.
+  `blog.html`; the contact page now uses `info@goldenqube.com`.
 - A form endpoint. The contact form and the footer subscribe both validate
   input and show a confirmation, but nothing is actually sent anywhere.
 - Learner Stories testimonials are placeholder copy with stock photography.
