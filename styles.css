@@ -1369,6 +1369,10 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   width:5px;height:26px;border-radius:3px;background:var(--gold-grad);
 }
 .tp-hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem);line-height:1.08;margin-bottom:14px}
+/* A modifier rather than a change to the rule above, which the Business
+   Owners hero shares: that headline is two short lines and wants the
+   full size. This one names three audiences and ran to four. */
+.tp-hero h1.is-long{font-size:clamp(1.9rem,3.5vw,2.6rem)}
 .tp-brand{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.3rem;color:var(--black)}
 .tp-sub{color:var(--muted);font-size:1rem;margin-top:4px}
 
@@ -1924,6 +1928,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 @media (max-width:620px){
   .tp-hero{padding:104px 0 56px}
   .tp-hero h1{font-size:clamp(1.9rem,8.6vw,2.6rem)}
+  .tp-hero h1.is-long{font-size:clamp(1.6rem,7.2vw,2.1rem)}
   .tp-chips{gap:14px 18px}
   .tp-chips li{flex:0 0 calc(50% - 9px)}
   /* a lighter tilt suits the smaller stacked cards */
