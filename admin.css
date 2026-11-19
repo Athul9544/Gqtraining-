@@ -25,7 +25,7 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-family:'Outfit',system-ui,sans-serif;
   background:var(--black);
   color:var(--off);
   -webkit-font-smoothing:antialiased;

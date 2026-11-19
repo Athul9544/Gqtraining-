@@ -25,7 +25,11 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  /* Outfit throughout — a geometric sans, and already the face every
+     heading and UI label on the site used. Body copy was the one thing
+     still set in Plus Jakarta Sans, which is humanist, so the two
+     disagreed on every page. One family, one download fewer. */
+  font-family:'Outfit',system-ui,sans-serif;
   background:var(--black);color:var(--ink);
   -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
@@ -749,10 +753,6 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .cta-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.3fr .7fr;gap:40px;align-items:center}
 .cta h2{font-size:clamp(2rem,4.2vw,3.2rem);margin-bottom:16px}
 .cta-text{color:#4A443A;line-height:1.7;max-width:460px}
-.script{
-  font-family:'Caveat',cursive;font-size:clamp(2.2rem,4.4vw,3.4rem);
-  line-height:1.05;color:#4A3A12;text-align:right;
-}
 
 /* ---------- GOOGLE RATING SUMMARY ---------- */
 /* appears only once live data arrives — [hidden] keeps it out until then */
