@@ -2359,7 +2359,14 @@ p,li{text-wrap:pretty}
 /* What the training is */
 .bo-about{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
 .bo-about-art{border-radius:var(--r);overflow:hidden;box-shadow:0 22px 50px rgba(20,19,18,.14)}
-.bo-about-art img{width:100%;aspect-ratio:16/10;object-fit:cover}
+/* 4:3 rather than 16:10. The photo here is portrait, and the wider slot
+   this started with cropped it to a band too shallow to hold both people
+   and the desk between them. */
+/* height:auto matters. The width and height attributes on the <img> act
+   as a presentational height, and aspect-ratio is only consulted when
+   height is auto — without this the box took the file's full 1535px and
+   the crop never happened. */
+.bo-about-art img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
 .bo-about-copy{border-left:3px solid var(--gold);padding-left:26px}
 .bo-about-copy h2{font-size:clamp(1.6rem,2.8vw,2.2rem);margin-bottom:14px}
 .bo-about-copy p{color:var(--muted);line-height:1.8}
