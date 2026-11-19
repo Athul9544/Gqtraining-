@@ -25,13 +25,13 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:'Outfit',system-ui,sans-serif;
+  font-family:var(--font);
   background:var(--black);
   color:var(--off);
   -webkit-font-smoothing:antialiased;
   min-height:100vh;
 }
-h1,h2,h3{font-family:'Outfit',sans-serif;letter-spacing:-.02em;line-height:1.15}
+h1,h2,h3{font-family:var(--font);letter-spacing:-.02em;line-height:1.15}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;color:var(--gold-light)}
@@ -40,7 +40,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;colo
 /* ------------------------------------------------------------- buttons   */
 
 .btn{
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:.88rem;
+  font-family:var(--font);font-weight:700;font-size:.88rem;
   padding:11px 20px;border-radius:999px;border:1px solid transparent;
   cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;
   transition:transform .18s cubic-bezier(.32,.72,0,1),opacity .18s,background .18s,border-color .18s;
@@ -65,7 +65,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;colo
   box-shadow:0 30px 70px rgba(0,0,0,.5);
 }
 .gate-logo{width:112px;margin:0 auto 22px}
-.gate-card h1{font-size:1.6rem;font-weight:800}
+.gate-card h1{font-size:1.6rem;font-weight:700}
 .gate-sub{color:var(--muted);font-size:.9rem;margin:8px 0 26px;line-height:1.5}
 .gate-card label{display:block;text-align:left;font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:7px}
 .gate-card input{
@@ -77,7 +77,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;colo
 .gate-card .btn{width:100%}
 /* shown in place of the password field when a deployment cannot work */
 .setup{text-align:left;font-size:.86rem;line-height:1.6;color:var(--muted)}
-.setup-lead{font-family:'Outfit',sans-serif;font-weight:700;font-size:.95rem;color:var(--gold-light);margin-bottom:12px}
+.setup-lead{font-family:var(--font);font-weight:700;font-size:.95rem;color:var(--gold-light);margin-bottom:12px}
 .setup p + p{margin-top:12px}
 .setup pre{
   background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
@@ -98,7 +98,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;colo
 .bar-in{max-width:960px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .bar-brand{display:flex;align-items:center;gap:11px;margin-right:auto}
 .bar-brand img{width:38px}
-.bar-brand span{font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:-.01em}
+.bar-brand span{font-family:var(--font);font-weight:700;letter-spacing:-.01em}
 .bar-actions{display:flex;gap:9px;flex-wrap:wrap}
 .bar-status{
   max-width:960px;margin:0 auto;padding:0 24px 12px;
@@ -111,7 +111,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;colo
 
 .wrap{max-width:960px;margin:0 auto;padding:30px 24px 90px}
 .intro{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
-.intro h2{font-size:1.5rem;font-weight:800}
+.intro h2{font-size:1.5rem;font-weight:700}
 .note{color:var(--muted);font-size:.84rem;line-height:1.6}
 .note.bad{color:var(--danger)}
 .foot-note{margin-top:28px;text-align:center}
@@ -137,7 +137,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;colo
 }
 .row.open .chev{transform:rotate(90deg);color:var(--gold)}
 .row-main{flex:1;min-width:0;cursor:pointer}
-.row-title{display:block;font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;
+.row-title{display:block;font-family:var(--font);font-weight:700;font-size:1rem;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row-sub{display:block;color:var(--muted);font-size:.78rem;margin-top:3px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

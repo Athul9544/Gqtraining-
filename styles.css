@@ -20,16 +20,26 @@
   --gold-grad:linear-gradient(135deg,#B8901F,#E3C670 50%,#A67C12);
   --r:16px;
   --shell:1200px;
+
+  /* SF Pro Display is Apple's own font. It is licensed for use on Apple
+     platforms, not for serving from a web server, so it cannot simply be
+     loaded the way Outfit was. Naming it through -apple-system and
+     BlinkMacSystemFont is the supported route: every Mac, iPhone and iPad
+     renders the real thing.
+
+     Inter follows for everyone else. It was drawn as a close relative of
+     SF and shares its proportions, so Windows and Android get the same
+     design rather than whatever their system font happens to be. */
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Inter',
+         system-ui,'Segoe UI',Roboto,sans-serif;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  /* Outfit throughout — a geometric sans, and already the face every
-     heading and UI label on the site used. Body copy was the one thing
-     still set in Plus Jakarta Sans, which is humanist, so the two
-     disagreed on every page. One family, one download fewer. */
-  font-family:'Outfit',system-ui,sans-serif;
+  font-family:var(--font);
+  font-weight:600;              /* semibold, per the type spec */
+  letter-spacing:-.005em;       /* -0.5% */
   background:var(--black);color:var(--ink);
   -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
@@ -37,11 +47,18 @@ img{max-width:100%;display:block}
 a{text-decoration:none;color:inherit}
 .shell{width:100%;max-width:var(--shell);margin:0 auto;padding:0 28px}
 
-h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;letter-spacing:-.02em}
+/* Bold, -0.5% tracking, 1.1 line height — the spec as written. It is a
+   display spec, so it lands on the headings.
+
+   The 1.05–1.15 line height is NOT carried down to paragraphs. At body
+   sizes those lines sit close enough that descenders meet the ascenders
+   below them; the 31 rules setting 1.5–1.8 for long copy keep what they
+   have. The family, weight and tracking do apply throughout. */
+h1,h2,h3,h4{font-family:var(--font);line-height:1.1;font-weight:700;letter-spacing:-.005em}
 .gold{background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 .eyebrow{
-  font-family:'Outfit',sans-serif;font-size:.72rem;font-weight:700;
+  font-family:var(--font);font-size:.72rem;font-weight:700;
   letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;
 }
 .center-eyebrow{text-align:center}
@@ -50,7 +67,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .btn{
   display:inline-flex;align-items:center;gap:9px;
   padding:14px 26px;border-radius:100px;border:1.5px solid transparent;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.94rem;
+  font-family:var(--font);font-weight:600;font-size:.94rem;
   cursor:pointer;transition:transform .25s,box-shadow .25s,background .25s,color .25s,border-color .25s;
 }
 .btn i{font-style:normal;transition:transform .25s}
@@ -67,7 +84,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 
 .text-link{
   display:inline-flex;align-items:center;gap:8px;margin-top:22px;
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;color:var(--gold-deep);
+  font-family:var(--font);font-weight:700;font-size:.9rem;color:var(--gold-deep);
   border-bottom:2px solid var(--line-gold);padding-bottom:4px;
 }
 .dark .text-link{color:var(--gold-light)}
@@ -83,7 +100,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .logo img{height:58px;width:auto}
 .nav{display:flex;align-items:center;gap:34px}
 .nav a{
-  font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;
+  font-family:var(--font);font-size:.82rem;font-weight:600;
   letter-spacing:.09em;text-transform:uppercase;
   color:rgba(255,255,255,.82);position:relative;transition:color .25s;
 }
@@ -156,7 +173,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   .hero-features li{opacity:1;transform:none;animation:none}
 }
 .hero-features b{
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.84rem;
+  font-family:var(--font);font-weight:600;font-size:.84rem;
   line-height:1.35;color:rgba(255,255,255,.88);
 }
 .mini-icon{
@@ -243,7 +260,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 /* practical tiles */
 .tile{padding:26px 24px}
 .tile .num{
-  font-family:'Outfit',sans-serif;font-weight:800;font-size:.78rem;
+  font-family:var(--font);font-weight:700;font-size:.78rem;
   letter-spacing:.18em;color:var(--gold-deep);display:block;margin-bottom:12px;
 }
 .dark .tile .num{color:var(--gold-light)}
@@ -255,14 +272,14 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .stats-band{background:var(--white);padding:40px 0 46px}
 .stats-band .eyebrow{margin-bottom:8px;font-size:.7rem;letter-spacing:.2em}
 .stats-title{
-  text-align:center;font-family:'Outfit',sans-serif;font-weight:700;
+  text-align:center;font-family:var(--font);font-weight:700;
   font-size:clamp(1.35rem,2.2vw,1.7rem);color:var(--black);margin-bottom:30px;
 }
 .stats{display:grid;grid-template-columns:repeat(4,1fr)}
 .stat{text-align:center;padding:4px 16px;border-right:1px solid rgba(20,19,18,.13)}
 .stat:last-child{border-right:0}
 .stat strong{
-  display:block;font-family:'Outfit',sans-serif;font-weight:800;
+  display:block;font-family:var(--font);font-weight:700;
   font-size:clamp(2.3rem,4vw,3.1rem);letter-spacing:-.02em;
   color:var(--black);margin-bottom:8px;line-height:1.05;
 }
@@ -330,7 +347,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   transform:rotate(-8deg) scale(1.08);box-shadow:0 8px 20px rgba(201,162,39,.35);
 }
 .why-list b{
-  flex:1;font-family:'Outfit',sans-serif;font-weight:600;font-size:.97rem;
+  flex:1;font-family:var(--font);font-weight:600;font-size:.97rem;
   transition:color .3s;
 }
 .why-list li:hover b{color:var(--gold-light)}
@@ -348,12 +365,12 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .badge{
   position:absolute;left:-14px;bottom:26px;display:flex;align-items:center;gap:10px;
   background:var(--gold-grad);color:#191305;padding:12px 20px;border-radius:100px;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.85rem;
+  font-family:var(--font);font-weight:600;font-size:.85rem;
   box-shadow:0 14px 30px rgba(0,0,0,.45);
 }
-.badge b{font-size:1.1rem;font-weight:800}
+.badge b{font-size:1.1rem;font-weight:700}
 .biz-copy h2{font-size:clamp(1.8rem,3.2vw,2.5rem);margin-bottom:12px}
-.biz-sub{color:var(--gold-light);font-family:'Outfit',sans-serif;font-size:1rem;margin-bottom:26px}
+.biz-sub{color:var(--gold-light);font-family:var(--font);font-size:1rem;margin-bottom:26px}
 .point-list{display:flex;flex-direction:column;gap:12px;margin-bottom:30px}
 .point{
   display:flex;align-items:flex-start;gap:16px;padding:16px 20px;
@@ -364,7 +381,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .point-icon{
   flex:0 0 36px;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
   background:rgba(201,162,39,.14);color:var(--gold-light);
-  font-family:'Outfit',sans-serif;font-weight:800;font-size:.8rem;transition:background .3s,color .3s;
+  font-family:var(--font);font-weight:700;font-size:.8rem;transition:background .3s,color .3s;
 }
 .point:hover .point-icon{background:var(--gold-grad);color:#191305}
 .point h3{font-size:.98rem;margin-bottom:3px}
@@ -377,7 +394,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 .prose-img{border-radius:12px;aspect-ratio:4/3.4;object-fit:cover;width:100%}
 .prose-card .big{
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:1.22rem;
+  font-family:var(--font);font-weight:700;font-size:1.22rem;
   line-height:1.4;margin-bottom:14px;
 }
 .prose-card p{color:var(--muted);line-height:1.75;font-size:.94rem}
@@ -396,7 +413,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 /* ---------- FOUNDERS ---------- */
 .founder .card-body{text-align:center}
 .founder .role{
-  color:var(--gold-deep);font-family:'Outfit',sans-serif;font-weight:700;
+  color:var(--gold-deep);font-family:var(--font);font-weight:700;
   font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;
 }
 
@@ -420,7 +437,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .quote-avatar img{width:100%;height:100%;object-fit:cover}
 .review:hover .quote-avatar{transform:scale(1.05)}
 .review p{font-size:.86rem;line-height:1.62;color:#55504A;flex:1;margin-bottom:16px}
-.review b{font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;color:var(--black)}
+.review b{font-family:var(--font);font-weight:700;font-size:.9rem;color:var(--black)}
 .review small{color:#7A746B;font-size:.78rem;display:block;margin-top:2px}
 .review .stars{color:var(--gold);letter-spacing:2px;margin-top:10px;font-size:.82rem}
 
@@ -442,7 +459,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .stack-card:hover{border-color:var(--line-gold)}
 .stack-num{
   position:absolute;top:26px;right:30px;
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:.82rem;
+  font-family:var(--font);font-weight:700;font-size:.82rem;
   letter-spacing:.14em;color:var(--gold-light);opacity:.75;
 }
 .stack-card h3{font-size:1.5rem;margin-bottom:12px}
@@ -452,7 +469,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 .stack-more{
   align-self:flex-start;display:inline-flex;align-items:center;gap:10px;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.88rem;color:var(--gold-light);
+  font-family:var(--font);font-weight:600;font-size:.88rem;color:var(--gold-light);
 }
 .stack-more i{
   font-style:normal;display:grid;place-items:center;
@@ -482,7 +499,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .hscroll .intro h2{font-size:clamp(1.8rem,3.2vw,2.6rem);margin-bottom:16px}
 .hscroll .intro p{color:var(--muted-dark);line-height:1.7;font-size:.98rem;max-width:400px}
 .hscroll-lead{
-  font-family:'Outfit',sans-serif;font-weight:600;
+  font-family:var(--font);font-weight:600;
   font-size:1.05rem;color:var(--gold-light) !important;margin-bottom:12px;
 }
 /* default (no JS / small screens / reduced motion): a plain grid */
@@ -588,7 +605,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .practical .tile:hover::before{transform:scaleY(1)}
 .practical-note{
   margin:36px auto 0;max-width:720px;text-align:center;
-  font-family:'Outfit',sans-serif;font-weight:500;
+  font-family:var(--font);font-weight:600;
   font-size:clamp(1rem,1.9vw,1.25rem);line-height:1.5;color:var(--muted);
 }
 
@@ -712,7 +729,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .member:hover .member-photo{border-color:var(--gold);transform:scale(1.03)}
 .member h3{font-size:1.32rem;margin-bottom:6px;color:#fff;line-height:1.2}
 .member .role{
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.96rem;
+  font-family:var(--font);font-weight:600;font-size:.96rem;
   color:var(--gold-light);margin-bottom:6px;line-height:1.35;
 }
 .member .org{font-size:.9rem;color:var(--muted-dark)}
@@ -768,7 +785,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   border-color:var(--line-gold);transform:translateY(-2px);
   box-shadow:0 14px 30px rgba(201,162,39,.18);
 }
-.g-score{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.15rem;color:var(--black)}
+.g-score{font-family:var(--font);font-weight:700;font-size:1.15rem;color:var(--black)}
 .g-stars{color:var(--gold);letter-spacing:2px;font-size:.9rem}
 .g-count{font-size:.82rem;color:var(--muted)}
 
@@ -776,7 +793,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .quote-avatar.is-initial{
   display:grid;place-items:center;
   background:var(--gold-grad);color:#191305;
-  font-family:'Outfit',sans-serif;font-weight:800;font-size:1.1rem;
+  font-family:var(--font);font-weight:700;font-size:1.1rem;
 }
 
 /* ---------- LEARNER STORIES SLIDER ---------- */
@@ -878,7 +895,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 .reel-close:hover{background:var(--gold-grad);color:#191305;border-color:transparent}
 .reel-open{
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.88rem;color:var(--gold-light);
+  font-family:var(--font);font-weight:600;font-size:.88rem;color:var(--gold-light);
 }
 .reel-open:hover{text-decoration:underline}
 
@@ -909,7 +926,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 .contact-watermark{
   position:absolute;top:96px;left:50%;transform:translateX(-50%);
-  font-family:'Outfit',sans-serif;font-weight:800;text-transform:uppercase;
+  font-family:var(--font);font-weight:700;text-transform:uppercase;
   font-size:min(12.5vw,11rem);line-height:1;letter-spacing:-.02em;white-space:nowrap;
   background:linear-gradient(180deg,rgba(227,198,112,.75),rgba(227,198,112,.10));
   -webkit-background-clip:text;background-clip:text;color:transparent;
@@ -928,7 +945,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   padding:10px 20px 10px 14px;border-radius:100px;margin-bottom:22px;
   background:#fff;border:1px solid var(--line);color:var(--ink);
   box-shadow:0 6px 18px rgba(20,19,18,.06);
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.86rem;
+  font-family:var(--font);font-weight:600;font-size:.86rem;
 }
 .contact-badge svg{width:19px;height:19px;color:var(--gold-deep)}
 .contact-left h1{font-size:clamp(2.2rem,4.2vw,3.2rem);letter-spacing:-.03em;margin-bottom:16px}
@@ -953,7 +970,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .cr-ico svg{width:22px;height:22px}
 .contact-row:not(.static):hover .cr-ico{background:var(--gold-grad);color:#191305}
 .cr-text{flex:1;line-height:1.35}
-.cr-text b{display:block;font-family:'Outfit',sans-serif;font-size:1rem;color:var(--black)}
+.cr-text b{display:block;font-family:var(--font);font-size:1rem;color:var(--black)}
 .cr-text small{font-size:.87rem;color:var(--muted)}
 .cr-go{
   display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;
@@ -973,7 +990,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .contact-formcard form{display:flex;flex-direction:column;gap:18px}
 .cf-two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .cf-group label{
-  display:block;font-family:'Outfit',sans-serif;font-weight:700;
+  display:block;font-family:var(--font);font-weight:700;
   font-size:.86rem;color:var(--black);margin-bottom:8px;
 }
 .cf-input{
@@ -1037,7 +1054,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 /* it is a <button>, so clear the UA default background and font */
 .contact-pop>.btn{
   -webkit-appearance:none;appearance:none;background:transparent;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.94rem;color:#fff;
+  font-family:var(--font);font-weight:600;font-size:.94rem;color:#fff;
 }
 .contact-opts{
   position:absolute;left:50%;bottom:calc(100% + 14px);
@@ -1090,7 +1107,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 /* oversized brand watermark — shown in full, sized to fit the viewport width */
 .footer-mark{
   margin:26px 0 0;padding:0 12px 26px;
-  font-family:'Outfit',sans-serif;font-weight:800;text-transform:uppercase;
+  font-family:var(--font);font-weight:700;text-transform:uppercase;
   font-size:min(12.6vw,12rem);line-height:1.02;letter-spacing:-.035em;
   text-align:center;white-space:nowrap;
   /* a light sweeps across the letters over the gold fade */
@@ -1155,13 +1172,13 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .post .tag{
   display:inline-block;margin-bottom:10px;padding:5px 11px;border-radius:100px;
   background:rgba(201,162,39,.12);color:var(--gold-deep);
-  font-family:'Outfit',sans-serif;font-size:.66rem;font-weight:700;
+  font-family:var(--font);font-size:.66rem;font-weight:700;
   letter-spacing:.14em;text-transform:uppercase;
 }
 .post h3{font-size:1.02rem;line-height:1.3;margin-bottom:8px}
 .link-more{
   display:inline-flex;align-items:center;gap:7px;margin-top:14px;
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:.84rem;color:var(--gold-deep);
+  font-family:var(--font);font-weight:700;font-size:.84rem;color:var(--gold-deep);
 }
 .link-more i{font-style:normal;transition:transform .25s}
 .card:hover .link-more i{transform:translateX(4px)}
@@ -1360,7 +1377,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 /* the gold rule sits against the eyebrow, as in the artwork */
 .tp-eyebrow{
   position:relative;padding-left:14px;margin-bottom:10px;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:1rem;color:#4A443A;
+  font-family:var(--font);font-weight:600;font-size:1rem;color:#4A443A;
 }
 .tp-eyebrow::before{
   content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
@@ -1371,12 +1388,12 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    Owners hero shares: that headline is two short lines and wants the
    full size. This one names three audiences and ran to four. */
 .tp-hero h1.is-long{font-size:clamp(1.9rem,3.5vw,2.6rem)}
-.tp-brand{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.3rem;color:var(--black)}
+.tp-brand{font-family:var(--font);font-weight:700;font-size:1.3rem;color:var(--black)}
 .tp-sub{color:var(--muted);font-size:1rem;margin-top:4px}
 
 .tp-chips{list-style:none;display:flex;flex-wrap:wrap;gap:26px;margin:28px 0 4px}
 .tp-chips li{display:flex;align-items:center;gap:11px}
-.tp-chips b{font-family:'Outfit',sans-serif;font-weight:600;font-size:.85rem;line-height:1.3;color:var(--black)}
+.tp-chips b{font-family:var(--font);font-weight:600;font-size:.85rem;line-height:1.3;color:var(--black)}
 /* the round gold-outlined icon used all over this page */
 .tp-ico{
   display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;
@@ -1402,7 +1419,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 
 /* ---------- why choose ---------- */
 .tp-why h2{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.12}
-.tp-why-tag{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.25rem;color:var(--black);margin:12px 0 14px}
+.tp-why-tag{font-family:var(--font);font-weight:700;font-size:1.25rem;color:var(--black);margin:12px 0 14px}
 .tp-why-text{color:var(--muted);line-height:1.75;font-size:.93rem;max-width:560px}
 .tp-why-photo img{width:100%;border-radius:18px;aspect-ratio:16/9;object-fit:cover;
   box-shadow:0 22px 48px rgba(20,19,18,.14)}
@@ -1425,7 +1442,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   position:absolute;z-index:0;
   left:50%;top:130px;transform:translateX(-50%);
   text-align:center;
-  font-family:'Outfit',sans-serif;font-weight:900;text-transform:uppercase;
+  font-family:var(--font);font-weight:700;text-transform:uppercase;
   font-size:min(17vw,15rem);line-height:.84;letter-spacing:-.04em;
   color:rgba(20,19,18,.03);          /* --ink at 3% */
   user-select:none;pointer-events:none;
@@ -1480,7 +1497,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-why-card .tp-ico svg{width:48px;height:48px}
 .tp-why-num{
   position:absolute;top:32px;right:36px;
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;
+  font-family:var(--font);font-weight:700;font-size:1rem;
   letter-spacing:.14em;opacity:.65;
 }
 /* All five cards come from the same supplied template, so they share one
@@ -1590,7 +1607,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   object-fit:contain;margin-bottom:calc(var(--cw) * .014);
 }
 .tp-certcard .tp-yt{width:calc(var(--cw) * .18);height:calc(var(--cw) * .133)}
-.tp-certcard b{font-family:'Outfit',sans-serif;font-size:calc(var(--cw) * .0659);color:var(--black)}
+.tp-certcard b{font-family:var(--font);font-size:calc(var(--cw) * .0659);color:var(--black)}
 .tp-certcard small{font-size:calc(var(--cw) * .0416);color:var(--muted);text-align:center;line-height:1.3}
 .tp-certcard em{font-family:'Caveat',cursive;font-size:calc(var(--cw) * .0763);font-style:normal;color:var(--gold-deep)}
 .tp-certcard strong{
@@ -1619,7 +1636,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 /* the four-step strip under the certificates */
 .tp-journey-strip{margin-top:44px;text-align:center}
 .tp-journey-label{
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:.78rem;
+  font-family:var(--font);font-weight:700;font-size:.78rem;
   letter-spacing:.2em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:22px;
 }
 .tp-steps{
@@ -1665,9 +1682,9 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   position:absolute;right:-2px;bottom:-2px;
   display:grid;place-items:center;width:21px;height:21px;border-radius:50%;
   background:var(--gold-grad);color:#191305;border:2px solid #fff;
-  font-style:normal;font-family:'Outfit',sans-serif;font-weight:800;font-size:.64rem;
+  font-style:normal;font-family:var(--font);font-weight:700;font-size:.64rem;
 }
-.tp-steps b{font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--black)}
+.tp-steps b{font-family:var(--font);font-size:.92rem;color:var(--black)}
 .tp-steps small{font-size:.72rem;color:var(--muted);line-height:1.4;max-width:130px}
 .tp-steps li:hover .tp-ico{background:var(--gold-grad);color:#191305;transform:translateY(-3px)}
 
@@ -1688,7 +1705,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-pro-list{list-style:none;display:flex;flex-direction:column;gap:16px}
 .tp-pro-list li{
   display:flex;align-items:center;gap:14px;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:.95rem;color:#fff;
+  font-family:var(--font);font-weight:600;font-size:.95rem;color:#fff;
 }
 .tp-pro-list .tp-ico{
   flex:0 0 36px;width:36px;height:36px;
@@ -1769,7 +1786,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-mod:not(.tp-aification)::after{
   content:counter(tp-mod,decimal-leading-zero);
   position:absolute;top:9px;right:11px;
-  font-family:'Outfit',sans-serif;font-weight:800;font-size:.74rem;
+  font-family:var(--font);font-weight:700;font-size:.74rem;
   color:var(--gold);opacity:.55;transition:opacity .35s;
 }
 .tp-mod:hover::after{opacity:1}
@@ -1777,7 +1794,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-mod:hover .tp-ico{background:var(--gold-grad);color:#191305;transform:translateY(-2px)}
 /* the gold hover above would otherwise wipe the colour off the toned ones */
 .tp-mod:hover .tp-ico.is-tone{background:var(--tint);color:var(--tone);transform:translateY(-2px)}
-.tp-mod b{font-family:'Outfit',sans-serif;font-weight:600;font-size:.88rem;line-height:1.38;color:var(--black)}
+.tp-mod b{font-family:var(--font);font-weight:600;font-size:.88rem;line-height:1.38;color:var(--black)}
 .tp-logo{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px}
 .tp-logo img{max-width:100%;max-height:26px;object-fit:contain}
 
@@ -1788,7 +1805,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   border-color:var(--gold);
 }
 .tp-aif-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
-.tp-aif-head b{font-family:'Outfit',sans-serif;font-weight:800;font-size:.92rem;letter-spacing:.04em;color:var(--gold-deep)}
+.tp-aif-head b{font-family:var(--font);font-weight:700;font-size:.92rem;letter-spacing:.04em;color:var(--gold-deep)}
 .tp-aification ul{list-style:none;display:flex;flex-direction:column;gap:7px}
 .tp-aification li{position:relative;padding-left:16px;font-size:.78rem;line-height:1.45;color:#4A443A}
 .tp-aification li::before{
@@ -1815,7 +1832,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
   display:flex;align-items:center;gap:16px;flex:0 0 auto;
   background:#fff;border:1px solid var(--line);border-radius:16px;
   padding:24px 30px;font-size:1.05rem;line-height:1.3;color:var(--black);
-  font-family:'Outfit',sans-serif;font-weight:600;white-space:nowrap;
+  font-family:var(--font);font-weight:600;white-space:nowrap;
   transition:border-color .3s,box-shadow .3s;
 }
 /* no lift and no pause — the rows must keep travelling under the cursor */
@@ -1826,7 +1843,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-tool .mono{
   display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:12px;
   background:var(--c,#8A8A8A);color:#fff;
-  font-style:normal;font-weight:800;font-size:.95rem;letter-spacing:.02em;
+  font-style:normal;font-weight:700;font-size:.95rem;letter-spacing:.02em;
 }
 /* a drifting row is motion — hold it still and let it scroll by hand instead */
 @media (prefers-reduced-motion:reduce){
@@ -1891,7 +1908,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-fan .tp-ico{flex:0 0 52px;width:52px;height:52px}
 .tp-fan .tp-ico svg{width:24px;height:24px}
 .tp-fan b{
-  font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem;
+  font-family:var(--font);font-weight:700;font-size:1.05rem;
   line-height:1.3;color:var(--black);letter-spacing:.01em;
 }
 
@@ -1912,7 +1929,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 .tp-prac-photo img{width:100%;height:100%;object-fit:cover}
 .tp-prac h3{font-size:1.08rem;color:var(--black);margin-bottom:4px}
-.tp-prac p{font-family:'Outfit',sans-serif;font-weight:600;font-size:.88rem;color:var(--gold-deep)}
+.tp-prac p{font-family:var(--font);font-weight:600;font-size:.88rem;color:var(--gold-deep)}
 
 /* ---------- advanced skill building strip ---------- */
 .tp-extra{position:relative;overflow:hidden;padding:60px 0;background:var(--white)}
@@ -2220,7 +2237,7 @@ p,li{text-wrap:pretty}
 .vs-card .vs-label{
   position:absolute;left:0;right:0;bottom:0;
   padding:30px 12px 11px;
-  font-family:'Outfit',sans-serif;font-weight:800;
+  font-family:var(--font);font-weight:700;
   font-size:clamp(.62rem,1.6vw,.84rem);
   letter-spacing:.02em;line-height:1.15;color:var(--white);
   text-transform:uppercase;text-align:center;
