@@ -1418,19 +1418,26 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    it because .band .shell already sits on z-index 1. */
 .tp-why-mark{
   position:absolute;z-index:0;
-  left:-.05em;top:30px;
+  left:50%;top:26px;transform:translateX(-50%);
+  text-align:center;
   font-family:'Outfit',sans-serif;font-weight:900;text-transform:uppercase;
-  font-size:min(13.5vw,11.5rem);line-height:1;letter-spacing:-.035em;
-  white-space:nowrap;
-  background:linear-gradient(180deg,rgba(201,162,39,.30),rgba(201,162,39,.05));
+  font-size:min(17vw,15rem);line-height:.84;letter-spacing:-.04em;
+  background:linear-gradient(180deg,rgba(201,162,39,.13),rgba(201,162,39,.03));
   -webkit-background-clip:text;background-clip:text;color:transparent;
+  /* text-shadow rather than a drop-shadow filter: a filter works off the
+     rendered alpha, and at this opacity the letters are far too faint to
+     cast anything. text-shadow is drawn from the glyph outlines at its
+     own strength, so it still gives the word an edge to sit on.
+
+     Tinted gold rather than black. A neutral shadow under letters this
+     pale greyed the whole word out — it stopped reading as gold at all. */
+  text-shadow:0 2px 10px rgba(166,124,18,.17);
   user-select:none;pointer-events:none;
 }
-/* Sized to fit the whole word on one line at phone widths. Any larger
-   and the second half runs off the right edge, which reads as a
-   mistake rather than as a backdrop. */
+/* Stacked on two lines, the longer word is only six characters, so it
+   fits comfortably at phone widths without a size of its own. */
 @media (max-width:720px){
-  .tp-why-mark{font-size:12vw;top:22px}
+  .tp-why-mark{top:20px}
 }
 
 .tp-why-grid{display:block}
