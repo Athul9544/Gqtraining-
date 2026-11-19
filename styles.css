@@ -2263,3 +2263,95 @@ p,li{text-wrap:pretty}
   }
   .vs-card .vs-label{font-size:.78rem;padding:30px 12px 11px}
 }
+
+/* ================================================================
+   BUSINESS OWNERS — the page's own sections
+   ================================================================
+   Assembled from pieces the site already has — .band, .card,
+   .icon-tile, .split-grid, .tp-steps — so these read as the same site
+   rather than a second one bolted on. Only the arrangements that did
+   not already exist are defined here. */
+
+/* A plain white band. `.band` on its own is transparent, which on this
+   site means the black body shows through and the ink text vanishes,
+   so a white band has to say so. */
+.bo-white{background:var(--white);color:var(--ink);padding:100px 0}
+
+/* heading on one side, the standfirst on the other, then the row of
+   cards full width underneath */
+.bo-split{display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:start;margin-bottom:36px}
+.bo-split h2{font-size:clamp(1.7rem,3vw,2.4rem)}
+.bo-split h2::after{
+  content:'';display:block;width:56px;height:3px;border-radius:2px;
+  background:var(--gold-grad);margin-top:16px;
+}
+.bo-split p{color:var(--muted);line-height:1.8}
+.band.dark .bo-split p{color:var(--muted-dark)}
+
+.bo-head{text-align:center;max-width:720px;margin:0 auto 42px}
+.bo-head h2{font-size:clamp(1.8rem,3.2vw,2.6rem);margin-bottom:12px}
+.bo-head p{color:var(--muted);line-height:1.7}
+.band.dark .bo-head p{color:var(--muted-dark)}
+
+/* Why owners need it — icon beside the label rather than above it.
+   These labels are three words; a stacked icon doubled the height of
+   the row and bought nothing. */
+.bo-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.bo-tile{display:flex;align-items:center;gap:14px;padding:18px}
+.bo-tile .icon-tile{margin-bottom:0;flex:0 0 44px;width:44px;height:44px;border-radius:12px}
+.bo-tile .icon-tile svg{width:21px;height:21px}
+.bo-tile h3{font-size:.94rem;line-height:1.32}
+
+/* What the training is */
+.bo-about{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+.bo-about-art{border-radius:var(--r);overflow:hidden;box-shadow:0 22px 50px rgba(20,19,18,.14)}
+.bo-about-art img{width:100%;aspect-ratio:16/10;object-fit:cover}
+.bo-about-copy{border-left:3px solid var(--gold);padding-left:26px}
+.bo-about-copy h2{font-size:clamp(1.6rem,2.8vw,2.2rem);margin-bottom:14px}
+.bo-about-copy p{color:var(--muted);line-height:1.8}
+
+/* The six subjects */
+.bo-learn{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.bo-sub{padding:26px 24px}
+.bo-sub h3{font-size:1.02rem;margin-bottom:9px;line-height:1.3}
+.bo-sub p{font-size:.87rem;line-height:1.65;color:var(--muted-dark)}
+.light .bo-sub p,.bo-white .bo-sub p{color:var(--muted)}
+
+/* Who it suits */
+.bo-people{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.bo-person{padding:24px 14px;text-align:center}
+.bo-person .icon-tile{margin:0 auto 14px}
+.bo-person h3{font-size:.9rem;line-height:1.35}
+
+/* Why us — divided like the stats row rather than boxed. Five short
+   points in five more cards would have been the fourth card grid on
+   one page. */
+.bo-reasons{display:grid;grid-template-columns:repeat(5,1fr)}
+.bo-reason{padding:2px 22px;border-left:1px solid var(--line-dark)}
+.bo-reason:first-child{border-left:0;padding-left:0}
+.bo-ico{
+  display:grid;place-items:center;width:40px;height:40px;border-radius:11px;
+  background:rgba(201,162,39,.14);color:var(--gold-light);margin-bottom:14px;
+}
+.bo-ico svg{width:20px;height:20px}
+.bo-reason h3{font-size:.95rem;margin-bottom:8px;line-height:1.3}
+.bo-reason p{font-size:.84rem;line-height:1.6;color:var(--muted-dark)}
+
+@media (max-width:1080px){
+  .bo-about{grid-template-columns:1fr;gap:32px}
+  .bo-tiles{grid-template-columns:repeat(2,1fr)}
+  .bo-learn{grid-template-columns:repeat(2,1fr)}
+  .bo-people{grid-template-columns:repeat(3,1fr)}
+  .bo-reasons{grid-template-columns:repeat(3,1fr);row-gap:28px}
+  .bo-reason:nth-child(3n+1){border-left:0;padding-left:0}
+}
+@media (max-width:720px){
+  .bo-white{padding:62px 0}
+  .bo-split{grid-template-columns:1fr;gap:18px;margin-bottom:28px}
+  .bo-head{margin-bottom:30px}
+  .bo-tiles,.bo-learn{grid-template-columns:1fr}
+  .bo-people{grid-template-columns:repeat(2,1fr)}
+  .bo-reasons{grid-template-columns:1fr;row-gap:22px}
+  .bo-reason{border-left:0;padding-left:0}
+  .bo-about-copy{padding-left:18px}
+}
