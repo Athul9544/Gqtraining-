@@ -2081,18 +2081,20 @@ p,li{text-wrap:pretty}
    the ring's diameter. */
 .vs.pin-on .vs-sticky{
   position:sticky;top:0;min-height:100vh;
-  padding:24px 0;
+  padding:16px 0;
   display:flex;flex-direction:column;justify-content:center;
 }
 /* Wide enough to keep the standfirst on one line: while pinned, a second
-   line costs the ring about 25px of diameter. */
-.vs-head{text-align:center;max-width:760px;margin:0 auto 10px}
-.vs-head h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:12px}
-.vs-sub{color:var(--muted);line-height:1.6}
+   line costs the ring about 25px of diameter. The heading is smaller here
+   than elsewhere on the site for the same reason — it is sharing a screen
+   with the ring, and the ring is the point. */
+.vs-head{text-align:center;max-width:820px;margin:0 auto 6px}
+.vs-head h2{font-size:clamp(1.6rem,3.2vw,2.2rem);margin-bottom:6px}
+.vs-sub{color:var(--muted);line-height:1.5;font-size:.95rem}
 
 .vs-stage{
   --n:7;                      /* number of cards on the ring */
-  --card:36%;                 /* card width, as a share of the stage */
+  --card:40%;                 /* card width, as a share of the stage */
   /* Close enough that neighbours overlap the way the cards in the
      reference clip do, without a label vanishing under the next one.
      Past roughly this ratio the cards stop getting bigger anyway: a
@@ -2101,7 +2103,7 @@ p,li{text-wrap:pretty}
   /* The orbit widens with the cards. Holding it still would have let
      them crowd into the middle and close the hole, and the hole is what
      makes it read as a ring rather than a pile. */
-  --radius:36%;               /* distance from the centre */
+  --radius:38%;               /* distance from the centre */
   /* How far the ring spills past its own box, in stage widths.
 
      Two numbers, because they answer different questions. --reach is
@@ -2111,8 +2113,8 @@ p,li{text-wrap:pretty}
      is smaller because the cards are barely tilted — a corner only
      reaches the diagonal at 45 degrees. Reserving the diagonal would
      throw away about 7% of the height the ring could have used. */
-  --reach:.648;               /* orbit + half a card's diagonal */
-  --reach-y:.605;             /* orbit + half a card's height, tilted */
+  --reach:.700;               /* orbit + half a card's diagonal */
+  --reach-y:.650;             /* orbit + half a card's height, tilted */
   --spill:calc(var(--stage) * (var(--reach-y) - .5));
   --rise:58vh;                /* how far below a card starts its climb */
 

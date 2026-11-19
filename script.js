@@ -885,10 +885,10 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
      is what decides how big the cards can be. */
   const fit = () => {
     if (!head) return;
-    const pad = 48 + 12;                       // pinned padding, plus a hair
+    const pad = 32 + 8;                        // pinned padding, plus a hair
     const spare = window.innerHeight - head.getBoundingClientRect().height - pad;
     /* the vertical extent, not the radial one — see --reach-y */
-    const reachY = parseFloat(getComputedStyle(stage).getPropertyValue('--reach-y')) || 0.605;
+    const reachY = parseFloat(getComputedStyle(stage).getPropertyValue('--reach-y')) || 0.650;
     const byHeight = spare / (2 * reachY);       // the ring spills past its box
     const byWidth = Math.min(700, window.innerWidth * 0.94);
     stage.style.setProperty('--stage', Math.round(Math.max(260, Math.min(byHeight, byWidth))) + 'px');
@@ -949,9 +949,9 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
      silently wrong the next time a card changes size. */
   const ringReach = () => {
     const v = parseFloat(getComputedStyle(stage).getPropertyValue('--reach'));
-    return v > 0 ? v : 0.648;
+    return v > 0 ? v : 0.700;
   };
-  let reach = 0.648;
+  let reach = 0.700;
   const remeasureReach = () => { reach = ringReach(); };
 
   const overRing = () => {
