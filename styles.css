@@ -2310,8 +2310,24 @@ p,li{text-wrap:pretty}
 .bo-about-copy h2{font-size:clamp(1.6rem,2.8vw,2.2rem);margin-bottom:14px}
 .bo-about-copy p{color:var(--muted);line-height:1.8}
 
-/* The six subjects */
+/* The six subjects.
+
+   These carry real product logos rather than the gold icon tile used
+   elsewhere on the page, so the tile is white: Google Ads, Analytics,
+   Search Console and Instagram are all drawn for a light background and
+   several of them disappear or muddy against the dark band. The two
+   subjects with no product behind them get a tinted glyph instead,
+   coloured through --tone. */
 .bo-learn{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.bo-logo{
+  display:grid;place-items:center;width:48px;height:48px;border-radius:13px;
+  background:#fff;margin-bottom:18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.22);
+  transition:transform .35s;
+}
+.bo-logo img{width:26px;height:26px;object-fit:contain}
+.bo-logo svg{width:25px;height:25px;color:var(--tone,var(--gold-deep))}
+.card:hover .bo-logo{transform:rotate(-8deg) scale(1.05)}
 .bo-sub{padding:26px 24px}
 .bo-sub h3{font-size:1.02rem;margin-bottom:9px;line-height:1.3}
 .bo-sub p{font-size:.87rem;line-height:1.65;color:var(--muted-dark)}
