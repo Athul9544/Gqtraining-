@@ -1004,6 +1004,31 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   narrow.addEventListener('change', relayout);
   still.addEventListener('change', relayout);
 
+  /* Arriving on #videos from a link — "Watch Video" on the home page —
+     lands on the section's own top, which while pinned is the start of
+     the runway: a heading over empty space, because not one card has
+     climbed yet. Someone who asked to see the reels should get the
+     finished circle, so skip to the end of the assembly instead.
+
+     primed is cleared so the cards adopt the new scroll position on the
+     next frame rather than sweeping up to it from wherever they were. */
+  const landOnFinishedCircle = () => {
+    if (location.hash !== '#videos') return;
+    if (!section.classList.contains('pin-on')) return;   // the row needs no help
+    const span = outer.offsetHeight - window.innerHeight;
+    if (span <= 0) return;
+    const top = outer.getBoundingClientRect().top + window.scrollY;
+    const root = document.documentElement;
+    const was = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';   // arriving, not gliding down the page
+    window.scrollTo(0, Math.round(top + span * 0.95));
+    root.style.scrollBehavior = was;
+    primed = false;
+    Motion.wake();
+  };
+  window.addEventListener('load', landOnFinishedCircle);
+  window.addEventListener('hashchange', landOnFinishedCircle);
+
   const rest = on => () => { focused = on; Motion.wake(); };
   stage.addEventListener('focusin', rest(true));
   stage.addEventListener('focusout', rest(false));
