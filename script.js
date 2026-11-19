@@ -887,7 +887,7 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
     if (!head) return;
     const pad = 32 + 8;                        // pinned padding, plus a hair
     const spare = window.innerHeight - head.getBoundingClientRect().height - pad;
-    /* the vertical extent, not the radial one — see --reach-y */
+    /* how far the ring spills above and below its box — see --reach-y */
     const reachY = parseFloat(getComputedStyle(stage).getPropertyValue('--reach-y')) || 0.650;
     const byHeight = spare / (2 * reachY);       // the ring spills past its box
     const byWidth = Math.min(700, window.innerWidth * 0.94);
@@ -925,43 +925,10 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   let focused = false;
   let onScreen = false;
 
-  /* Where the mouse is, rather than whether it has "entered" anything.
-     pointerenter only fires when the pointer itself moves, so a cursor
-     left sitting still while the section scrolls up to meet it — or
-     while the cards turn underneath it — never counted as a hover, and
-     the ring carried on turning under the cursor. Re-testing the
-     position against the ring every frame cannot miss either case.
-
-     Mouse only: a tap would otherwise leave its coordinates behind on a
-     touchscreen and stop the ring for good. */
-  let px = 0, py = 0, hasMouse = false;
-  window.addEventListener('pointermove', e => {
-    if (e.pointerType !== 'mouse') return;
-    px = e.clientX; py = e.clientY; hasMouse = true;
-    Motion.wake();
-  }, { passive: true });
-  document.addEventListener('pointerleave', () => { hasMouse = false; Motion.wake(); });
-
-  /* The ring's full reach: the orbit itself plus half a card's diagonal,
-     so the cards count as well as the hole in the middle. Derived from
-     --radius and --card in the stylesheet, which is where the ring's
-     geometry is actually decided — hard-coding it here would leave this
-     silently wrong the next time a card changes size. */
-  const ringReach = () => {
-    const v = parseFloat(getComputedStyle(stage).getPropertyValue('--reach'));
-    return v > 0 ? v : 0.700;
-  };
-  let reach = 0.700;
-  const remeasureReach = () => { reach = ringReach(); };
-
-  const overRing = () => {
-    if (!hasMouse) return false;
-    const r = stage.getBoundingClientRect();
-    const dx = px - (r.left + r.width / 2);
-    const dy = py - (r.top + r.height / 2);
-    const far = r.width * reach;
-    return dx * dx + dy * dy <= far * far;
-  };
+  /* The cursor deliberately does not stop the ring. Keyboard focus still
+     does: tabbing onto a card has to hold it still long enough to be
+     read and pressed, and that only happens when someone is navigating
+     by keyboard. A mouse user can just click a card as it passes. */
 
   const paint = (dt) => {
     if (!section.classList.contains('pin-on')) {
@@ -986,7 +953,7 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
 
     /* Turning only once every card is home, and only while the section is
        actually on screen — otherwise the loop would never sleep. */
-    const wantSpeed = (p >= ASSEMBLED && onScreen && !focused && !overRing()) ? TOP_SPEED : 0;
+    const wantSpeed = (p >= ASSEMBLED && onScreen && !focused) ? TOP_SPEED : 0;
     speed = Motion.toward(speed, wantSpeed, dt, 0.55);
     if (speed > 0.004) {
       spin = (spin + speed * dt) % 360;
@@ -998,7 +965,7 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
     return busy;
   };
 
-  const relayout = () => { measure(); remeasureReach(); primed = false; Motion.wake(); };
+  const relayout = () => { measure(); primed = false; Motion.wake(); };
   window.addEventListener('resize', relayout);
   window.addEventListener('load', relayout);
   narrow.addEventListener('change', relayout);
@@ -1039,7 +1006,6 @@ document.querySelectorAll('.tp-mq-track').forEach(track => {
   }).observe(stage);
 
   measure();
-  remeasureReach();
   Motion.add(paint);
 
   /* ---- the player ---- */

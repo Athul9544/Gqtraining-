@@ -2104,17 +2104,12 @@ p,li{text-wrap:pretty}
      them crowd into the middle and close the hole, and the hole is what
      makes it read as a ring rather than a pile. */
   --radius:38%;               /* distance from the centre */
-  /* How far the ring spills past its own box, in stage widths.
-
-     Two numbers, because they answer different questions. --reach is
-     radial, to the far corner of a card, and the cursor test wants that
-     one: generous, so pointing anywhere on a card counts. --reach-y is
-     the vertical extent of a card sitting at the top of the orbit, which
-     is smaller because the cards are barely tilted — a corner only
-     reaches the diagonal at 45 degrees. Reserving the diagonal would
-     throw away about 7% of the height the ring could have used. */
-  --reach:.700;               /* orbit + half a card's diagonal */
-  --reach-y:.650;             /* orbit + half a card's height, tilted */
+  /* How far the ring spills past its own box, in stage widths: the
+     orbit plus half a card's height, measured with the card's small
+     tilt. Not half its diagonal — a corner only reaches that far at 45
+     degrees, and reserving it threw away about 7% of the height the
+     ring could have used. */
+  --reach-y:.650;
   --spill:calc(var(--stage) * (var(--reach-y) - .5));
   --rise:58vh;                /* how far below a card starts its climb */
 
@@ -2192,9 +2187,9 @@ p,li{text-wrap:pretty}
 
 .vs-card:hover{box-shadow:0 20px 42px rgba(20,19,18,.32),0 0 0 2px var(--gold)}
 
-/* A ring that never stops is hard to click and hard to read, so hover and
-   keyboard focus bring it to rest. script.js watches for both and eases
-   the speed down, rather than halting on the spot. */
+/* The ring keeps turning under the cursor — only keyboard focus brings
+   it to rest, so tabbing onto a card holds it still long enough to read
+   and press. script.js eases the speed down rather than halting it. */
 
 /* Nothing sits below the ring: anything there scrolls past while the
    section is pinned, which reads as the ring having come loose. */
