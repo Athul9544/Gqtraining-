@@ -1865,7 +1865,9 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 
 /* ---------- built by practitioners ---------- */
 .tp-prac-band{background:#FAF6EC}
-.tp-prac-title{font-size:clamp(1.4rem,2.6vw,1.9rem);letter-spacing:.06em;margin-bottom:24px}
+/* Tracking back to the heading default: the wide spacing here was for
+   the all-caps title this replaced, and it reads as gappy on a sentence. */
+.tp-prac-title{font-size:clamp(1.4rem,2.6vw,1.9rem);letter-spacing:-.01em;margin-bottom:24px}
 .tp-prac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .tp-prac{
   display:flex;align-items:center;gap:18px;
