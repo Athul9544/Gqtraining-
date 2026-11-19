@@ -2148,6 +2148,14 @@ p,li{text-wrap:pretty}
   display:grid;place-items:center;
 }
 
+/* Every slot is a full-stage box, so seven of them lie on top of one
+   another and the last one in the markup swallowed the clicks meant for
+   the six beneath it — only one card in seven could actually be opened.
+   The boxes are scaffolding, not targets: clicks pass straight through
+   them and land on the cards themselves. */
+.vs-ring,.vs-slot{pointer-events:none}
+.vs-card{pointer-events:auto}
+
 /* --r is how far this card has arrived, 0 to 1, written by script.js from
    the scroll position. At 0 it waits below the fold; at 1 it sits on the
    ring.
@@ -2328,11 +2336,22 @@ p,li{text-wrap:pretty}
 .bo-sub p{font-size:.87rem;line-height:1.65;color:var(--muted-dark)}
 .light .bo-sub p,.bo-white .bo-sub p{color:var(--muted)}
 
-/* Who it suits */
+/* Who it suits.
+
+   A colour each, rather than five gold tiles in a row. The pair is
+   given per card as --tone (the glyph) and --tint (the pad behind it)
+   instead of being mixed from one value, so there is nothing here that
+   depends on color-mix being available. */
 .bo-people{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
 .bo-person{padding:24px 14px;text-align:center}
-.bo-person .icon-tile{margin:0 auto 14px}
 .bo-person h3{font-size:.9rem;line-height:1.35}
+.bo-tint{
+  display:grid;place-items:center;width:52px;height:52px;border-radius:14px;
+  background:var(--tint,#F3EFE5);color:var(--tone,var(--gold-deep));
+  margin:0 auto 14px;transition:transform .35s;
+}
+.bo-tint svg{width:25px;height:25px}
+.card:hover .bo-tint{transform:rotate(-8deg) scale(1.05)}
 
 /* Why us — divided like the stats row rather than boxed. Five short
    points in five more cards would have been the fourth card grid on
