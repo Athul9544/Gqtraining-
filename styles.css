@@ -1387,6 +1387,11 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 }
 .tp-ico svg{width:20px;height:20px}
 .tp-ico.is-yt{color:#FF0000;border-color:rgba(255,0,0,.25);background:rgba(255,0,0,.07)}
+/* A colour each where a module has no product mark to stand for it. The
+   same circle as the gold default, with its two colours handed in per
+   module, so a grid mixing brand logos and glyphs still reads as one
+   set rather than two. */
+.tp-ico.is-tone{color:var(--tone);background:var(--tint);border-color:transparent}
 
 .tp-hero-art{position:relative;display:flex;justify-content:center}
 .tp-hero-art img{
@@ -1772,6 +1777,8 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
 .tp-mod:hover::after{opacity:1}
 .tp-mod:hover{transform:translateY(-6px);border-color:var(--line-gold);box-shadow:0 18px 38px rgba(201,162,39,.20)}
 .tp-mod:hover .tp-ico{background:var(--gold-grad);color:#191305;transform:translateY(-2px)}
+/* the gold hover above would otherwise wipe the colour off the toned ones */
+.tp-mod:hover .tp-ico.is-tone{background:var(--tint);color:var(--tone);transform:translateY(-2px)}
 .tp-mod b{font-family:'Outfit',sans-serif;font-weight:600;font-size:.88rem;line-height:1.38;color:var(--black)}
 .tp-logo{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px}
 .tp-logo img{max-width:100%;max-height:26px;object-fit:contain}
