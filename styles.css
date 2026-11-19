@@ -1411,27 +1411,20 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;font-weight:800;lett
    runs backwards on the way up for free. */
 /* heading first, then the cards stack beneath it at full screen size */
 /* The section's wordmark, set into the background behind the heading.
-   Same idiom as the contact page watermark: a gold gradient clipped to
-   the letters and faded out downward, so it reads as a tint rather than
-   a second heading competing with the real one. It takes no clicks and
-   cannot be selected, and the sticky cards below scroll over the top of
-   it because .band .shell already sits on z-index 1. */
+   Flat black at 3%, so it reads as a faint tint in the paper rather
+   than a second heading competing with the real one. It takes no clicks
+   and cannot be selected, and the sticky cards below scroll over the top
+   of it because .band .shell already sits on z-index 1.
+
+   A plain colour rather than the clipped gradient this used to carry:
+   at a single flat value there is nothing for background-clip to do. */
 .tp-why-mark{
   position:absolute;z-index:0;
   left:50%;top:130px;transform:translateX(-50%);
   text-align:center;
   font-family:'Outfit',sans-serif;font-weight:900;text-transform:uppercase;
   font-size:min(17vw,15rem);line-height:.84;letter-spacing:-.04em;
-  background:linear-gradient(180deg,rgba(201,162,39,.07),rgba(201,162,39,.012));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  /* text-shadow rather than a drop-shadow filter: a filter works off the
-     rendered alpha, and at this opacity the letters are far too faint to
-     cast anything. text-shadow is drawn from the glyph outlines at its
-     own strength, so it still gives the word an edge to sit on.
-
-     Tinted gold rather than black. A neutral shadow under letters this
-     pale greyed the whole word out — it stopped reading as gold at all. */
-  text-shadow:0 7px 24px rgba(166,124,18,.38);
+  color:rgba(20,19,18,.03);          /* --ink at 3% */
   user-select:none;pointer-events:none;
 }
 /* Stacked on two lines, the longer word is only six characters, so it
