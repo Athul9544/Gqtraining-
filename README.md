@@ -144,16 +144,16 @@ vercel alias set <deployment-url> gqtraining.vercel.app
   and then fails on save. To do it by hand instead: Vercel → the `training`
   project → Settings → Environment Variables (Production), then redeploy.
 
-  The earlier "Your Team exceeded our fair use limits" block appears to be
-  lifted: the project API answers and the site serves normally.
-- **The GitHub token can read but not write**, confirmed by a probe that sent
-  a deliberately stale sha — a write-capable token answers 409, this one
-  answers 403 *"Resource not accessible by personal access token"*. The local
-  store does not use it, so the local admin is unaffected, but the **hosted**
-  admin stores through it: without the fix, saving fails. Grant
-  **Contents: Read and write** at GitHub → Settings → Developer settings →
-  Fine-grained tokens → that token → Repository permissions. Editing the
-  permission does not change the token value.
+  **This is currently blocked by Vercel, not by the project.** Adding either
+  variable is refused with *"Your Team exceeded our fair use limits and has
+  been blocked."* Reading from the Vercel API works, and deploys from GitHub
+  work — only writes are refused, which is why the site serves normally and
+  the block is easy to miss. `athul9544s-projects` is the only team on the
+  account, so there is no other scope to deploy under. Settle it at
+  vercel.com/dashboard, then run `setup-hosted-admin.cmd` again.
+- ~~The GitHub token can read but not write.~~ **Fixed** — the token now has
+  **Contents: Read and write**, confirmed by a probe that sends a deliberately
+  stale sha (a write-capable token answers 409; a read-only one answers 403).
 - The floating WhatsApp button on `index.html`, `training.html` and `blog.html`
   still points at the placeholder `wa.me/910000000000`. It was removed from
   `contact.html`.

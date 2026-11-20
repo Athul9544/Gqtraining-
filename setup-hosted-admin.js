@@ -104,8 +104,24 @@ async function setVar(name, value) {
   await run('vercel', ['env', 'rm', name, 'production', '--yes']);
 
   const added = await run('vercel', ['env', 'add', name, 'production'], value);
-  if (added.code !== 0) fail('Could not set ' + name + ' on Vercel.', added.out.split('\n').slice(-3).join(' '));
-  line('    ' + name + ' set');
+  if (added.code === 0) return line('    ' + name + ' set');
+
+  /* Reading from the Vercel API keeps working while the team is blocked, and
+     so do deploys from GitHub — only writes are refused. That makes the block
+     easy to mistake for a CLI or permissions problem, so name it. */
+  if (/fair use limits/i.test(added.out)) {
+    fail(
+      'Vercel refuses to store it: "Your Team exceeded our fair use limits ' +
+      'and has been blocked."',
+      'Nothing in this project can fix that — it is an account matter.\n' +
+      '    Settle it at vercel.com/dashboard (Settings -> Billing, or contact\n' +
+      '    support), then run this again. Reading from Vercel and deploying\n' +
+      '    from GitHub still work, which is why the site itself is fine.\n' +
+      '    Until then use the local admin: start-admin.cmd'
+    );
+  }
+
+  fail('Could not set ' + name + ' on Vercel.', added.out.split('\n').slice(-3).join(' '));
 }
 
 /* ------------------------------------------------------------------- main */
