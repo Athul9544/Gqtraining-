@@ -138,7 +138,10 @@ vercel alias set <deployment-url> gqtraining.vercel.app
   `/api/admin?action=session` reports `missing: ["ADMIN_PASSWORD",
   "GITHUB_TOKEN"]`, so it shows the setup screen instead of a login box.
 
-  Both values are already in `.env.local`. Add them at Vercel → the `training`
+  Both values are already in `.env.local`. Run `setup-hosted-admin.cmd` to
+  send them to Vercel and redeploy — it refuses to start unless the GitHub
+  token can actually write, so it cannot leave you with an admin that signs in
+  and then fails on save. To do it by hand instead: Vercel → the `training`
   project → Settings → Environment Variables (Production), then redeploy.
 
   The earlier "Your Team exceeded our fair use limits" block appears to be

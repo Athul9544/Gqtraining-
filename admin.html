@@ -22,12 +22,20 @@
 
     <!-- shown instead of the form when this deployment has no ADMIN_PASSWORD -->
     <div class="setup" id="setup" hidden>
-      <p class="setup-lead">This hosted admin is not set up.</p>
-      <p>Run the admin on your own computer instead — double-click
-        <code>start-admin.cmd</code> in the project folder, or run:</p>
-      <pre>node dev-server.js</pre>
-      <p>then open <b>http://localhost:4321/admin.html</b> and sign in there.
-        Saving publishes to the live blog exactly the same way.</p>
+      <p class="setup-lead">This hosted admin is not switched on yet.</p>
+
+      <p><b>To switch it on</b> — on the computer that holds the project,
+        double-click <code>setup-hosted-admin.cmd</code>, or run:</p>
+      <pre>node setup-hosted-admin.js</pre>
+      <p>It sends the two values already in <code>.env.local</code> to Vercel
+        and redeploys. It checks the GitHub token can write before it starts,
+        and tells you how to fix it if it cannot.</p>
+
+      <p><b>Or skip it</b> and run the admin on your own computer — double-click
+        <code>start-admin.cmd</code>, then open
+        <b>http://localhost:4321/admin.html</b>. That works today and publishes
+        to the live blog exactly the same way.</p>
+
       <p class="setup-why" id="setup-why"></p>
     </div>
 

@@ -383,7 +383,8 @@
         document.getElementById('login-fields').hidden = true;
         document.getElementById('setup-why').textContent =
           'Technical reason: ' + state.missing.join(' and ') +
-          ' is not set on this deployment.';
+          (state.missing.length > 1 ? ' are' : ' is') +
+          ' not set on this deployment.';
         showGate('');
         return;
       }
