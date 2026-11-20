@@ -240,7 +240,16 @@ async function githubRequest(path, init) {
 
   if (!response.ok) {
     const detail = (await response.text()).slice(0, 300);
-    const err = new Error('GitHub ' + response.status + ': ' + detail);
+
+    /* A token that can read but not write is the single most likely thing to
+       be wrong here, and "GitHub 403: Resource not accessible" tells whoever
+       is looking at the admin page nothing about how to fix it. */
+    const readOnly = response.status === 403 && init && init.method === 'PUT';
+    const err = new Error(readOnly
+      ? 'GitHub refused the write. GITHUB_TOKEN can read this repository but not write to it — ' +
+        'give it "Contents: Read and write" on ' + repoSlug() + ', or issue a new token that has it.'
+      : 'GitHub ' + response.status + ': ' + detail);
+
     err.status = response.status;
     throw err;
   }

@@ -6,6 +6,11 @@
    =========================================================== */
 
 :root{
+  /* This page does not load styles.css, so it needs its own --font. Without
+     it every font-family:var(--font) below was invalid and the whole admin
+     fell back to the browser's default serif. Same stack as the site. */
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Inter',
+         system-ui,'Segoe UI',Roboto,sans-serif;
   --black:#0B0B0A;
   --panel:#141312;
   --panel-2:#1C1A17;
@@ -26,6 +31,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:var(--font);
+  letter-spacing:-.005em;
   background:var(--black);
   color:var(--off);
   -webkit-font-smoothing:antialiased;

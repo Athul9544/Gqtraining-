@@ -132,18 +132,22 @@ vercel alias set <deployment-url> gqtraining.vercel.app
 
 ## Still to do
 
-- **The Vercel team is blocked** — "Your Team exceeded our fair use limits and
-  has been blocked." Writes to the project API are refused, so no environment
-  variables can be added to the project, and `gqtraining.vercel.app` returns
-  402. Deployments from GitHub still work and `gqtraining-ruby.vercel.app`
-  serves normally. This is a billing/support matter in the Vercel dashboard.
+- **The hosted admin needs two environment variables.** The local admin works
+  today — `start-admin.cmd`, sign in, edit, Save & publish. The hosted one at
+  `gqtraining-ruby.vercel.app/admin.html` loads and its API answers, but
+  `/api/admin?action=session` reports `missing: ["ADMIN_PASSWORD",
+  "GITHUB_TOKEN"]`, so it shows the setup screen instead of a login box.
 
-  The blog admin does not depend on it — `node dev-server.js` publishes
-  through git. Hosting the admin at `/admin.html` does, as do the Google
-  reviews below.
-- **The GitHub token can read but not write.** GitHub refuses with *"Resource
-  not accessible by personal access token"*. It is only needed by the `github`
-  store, so nothing is blocked by it today. To use it later, grant
+  Both values are already in `.env.local`. Add them at Vercel → the `training`
+  project → Settings → Environment Variables (Production), then redeploy.
+
+  The earlier "Your Team exceeded our fair use limits" block appears to be
+  lifted: the project API answers and the site serves normally.
+- **The GitHub token can read but not write**, confirmed by a probe that sent
+  a deliberately stale sha — a write-capable token answers 409, this one
+  answers 403 *"Resource not accessible by personal access token"*. The local
+  store does not use it, so the local admin is unaffected, but the **hosted**
+  admin stores through it: without the fix, saving fails. Grant
   **Contents: Read and write** at GitHub → Settings → Developer settings →
   Fine-grained tokens → that token → Repository permissions. Editing the
   permission does not change the token value.
